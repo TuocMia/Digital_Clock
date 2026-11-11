@@ -1,0 +1,16 @@
+# build
+build/
+Debug/
+Release/
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+
+# IDE ca nhan
+.vscode/
+.idea/
+*.code-workspace
+*.swp
