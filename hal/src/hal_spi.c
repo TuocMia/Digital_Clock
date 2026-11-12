@@ -39,9 +39,9 @@ void SPI_SetSpeed(SPI_TypeDef *SPIx, u8 SpeedSet)
 
     /* Set SPI baud rate prescaler */
     if (SpeedSet == 1) {
-        SPIx->CR1 = (SPIx->CR1 & 0xFFC7) | SPI_BaudRatePrescaler_2;
+        SPI_BaudRatePrescalerConfig(SPIx, SPI_BaudRatePrescaler_2);
     } else {
-        SPIx->CR1 = (SPIx->CR1 & 0xFFC7) | SPI_BaudRatePrescaler_32;
+        SPI_BaudRatePrescalerConfig(SPIx, SPI_BaudRatePrescaler_32);
     }
 
     /* Enable SPI peripheral */
