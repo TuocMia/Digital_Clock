@@ -1,20 +1,36 @@
-#include "FreeRTOS.h"
-#include "task.h"
+#include "stm32f10x.h"
+#include "st7789.h"
+
+static void delay(volatile uint32_t count)
+{
+    while (count--)
+    {
+        __NOP();
+    }
+}
 
 int main(void)
 {
-    /* 1. Hardware & HAL init */
-    /* bsp_init(); hal_delay_init(); st7735_init(); ds1302_init(); */
+    /* Initialize ST7789 LCD */
+    LCD_Init();
 
-    /* 2. FreeRTOS IPC object creation */
-    /* app_ipc_init(); */
+    /* Test RED */
+    LCD_Clear(RED);
+    delay(5000000);
 
-    /* 3. Create tasks */
-    /* task_button_create(); task_pot_create(); task_ctrl_create(); */
-    /* task_rtc_create(); task_alarm_create(); task_display_create(); */
+    /* Test GREEN */
+    LCD_Clear(GREEN);
+    delay(5000000);
 
-    /* 4. Start scheduler */
-    vTaskStartScheduler();
+    /* Test BLUE */
+    LCD_Clear(BLUE);
+    delay(5000000);
 
-    for (;;);
+    /* Test WHITE */
+    LCD_Clear(WHITE);
+    delay(5000000);
+
+    while (1)
+    {
+    }
 }
