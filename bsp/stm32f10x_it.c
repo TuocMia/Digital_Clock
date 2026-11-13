@@ -100,14 +100,7 @@ void UsageFault_Handler(void)
   }
 }
 
-/**
-  * @brief  This function handles SVCall exception.
-  * @param  None
-  * @retval None
-  */
-void SVC_Handler(void)
-{
-}
+/* SVC_Handler: do FreeRTOS port cung cap (xem FreeRTOSConfig.h) */
 
 /**
   * @brief  This function handles Debug Monitor exception.
@@ -118,23 +111,9 @@ void DebugMon_Handler(void)
 {
 }
 
-/**
-  * @brief  This function handles PendSVC exception.
-  * @param  None
-  * @retval None
-  */
-void PendSV_Handler(void)
-{
-}
+/* PendSV_Handler: do FreeRTOS port cung cap (xem FreeRTOSConfig.h) */
 
-/**
-  * @brief  This function handles SysTick Handler.
-  * @param  None
-  * @retval None
-  */
-void SysTick_Handler(void)
-{
-}
+/* SysTick_Handler: do FreeRTOS port cung cap (xem FreeRTOSConfig.h) */
 
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
