@@ -8,21 +8,22 @@
 #define LCD_SCK_PIN    GPIO_Pin_13
 #define LCD_MOSI_PIN   GPIO_Pin_15
 #define LCD_RS_PORT    GPIOB
+#define LCD_LED_PIN    GPIO_Pin_9
 #define LCD_RS_PIN     GPIO_Pin_10
 #define LCD_RST_PORT   GPIOB
 #define LCD_RST_PIN    GPIO_Pin_12
 
-/* DS1302 (bit-bang 3 day, cap nguon 3V3) */
+/* DS1302 (bit-bang 3 day, khop voi hal_ds1302.h) */
 #define DS_PORT        GPIOA
-#define DS_CE_PIN      GPIO_Pin_1
-#define DS_CLK_PIN     GPIO_Pin_2
-#define DS_IO_PIN      GPIO_Pin_4
+#define DS_CE_PIN      GPIO_Pin_4
+#define DS_CLK_PIN     GPIO_Pin_5
+#define DS_IO_PIN      GPIO_Pin_7
 
 /* Nut bam (noi GND, pull-up noi, nhan = 0) */
 #define BTN_PORT       GPIOA
 #define BTN_PIN        GPIO_Pin_0
 
-/* Bien tro (ADC1 kenh 3 - PA3 nhu so do de cuong) */
+/* Bien tro (ADC1 kenh 3 - PA3, khop voi hal_adc.c) */
 #define POT_PORT       GPIOA
 #define POT_PIN        GPIO_Pin_3
 #define POT_ADC_CH     3
