@@ -38,4 +38,10 @@ hal_ds1302_status_t hal_ds1302_read_time(hal_ds1302_datetime_t *datetime);
 /* Validate and write date/time in 24-hour format. */
 hal_ds1302_status_t hal_ds1302_write_time(const hal_ds1302_datetime_t *datetime);
 
+/* Read one byte from DS1302 31-byte battery-backed RAM (addr: 0..30). */
+hal_ds1302_status_t hal_ds1302_read_ram(uint8_t addr, uint8_t *value);
+
+/* Write one byte to DS1302 31-byte battery-backed RAM (addr: 0..30). */
+hal_ds1302_status_t hal_ds1302_write_ram(uint8_t addr, uint8_t value);
+
 #endif
