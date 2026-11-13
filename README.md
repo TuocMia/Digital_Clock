@@ -1,22 +1,23 @@
 # Digital Clock Project
 
 ## Overview
-A STM32F103‑based digital clock that drives a **ST7789 1.3‑inch SPI LCD**, reads **DS1302 RTC**, handles a **button (PA0)**, and a **potentiometer (PA3)** for brightness control.
+A STM32F103-based digital clock running **FreeRTOS** that drives an **ST7789 240x240 SPI LCD**, reads/writes **DS1302 RTC** (including 31-byte battery-backed RAM for alarm storage), handles a **button (PA0)**, and a **potentiometer (PA3)** to adjust time and alarm settings.
 
 ## Hardware Pin Map
 | Function | Port | Pin | Note |
 |----------|------|-----|------|
 | LCD SCK  | PB   | 13  | SPI2 SCK |
 | LCD MOSI | PB   | 15  | SPI2 MOSI |
+| LCD LED (BL) | PB | 9 | Backlight |
 | LCD RS   | PB   | 10  | Data/Command |
 | LCD RST  | PB   | 12  | Reset |
-| Button   | PA   | 0   | Pull‑up, pressed = 0 |
-| Potentiometer (ADC) | PA | 3 | ADC1 Channel 3 |
-| DS1302 CE | PA | 1 | Bit‑bang CE |
-| DS1302 CLK | PA | 2 | Bit‑bang Clock |
-| DS1302 IO  | PA | 4 | Bit‑bang data line |
-| Buzzer   | PA   | 8   | Active‑high |
-| LED (Blue Pill) | PC | 13 | Active‑low |
+| Button   | PA   | 0   | Pull-up, pressed = 0 |
+| Potentiometer (ADC) | PA | 3 | ADC1 Channel 3 |
+| DS1302 CE | PA | 4 | Bit-bang CE |
+| DS1302 CLK | PA | 5 | Bit-bang Clock |
+| DS1302 IO | PA | 7 | Bit-bang data line |
+| Buzzer   | PA   | 8   | Active-high |
+| LED (Blue Pill) | PC | 13 | Active-low |
 
 > **Note:** The LCD module hard‑wires CS to GND, so no CS pin is defined in the code.
 
