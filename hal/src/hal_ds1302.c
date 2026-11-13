@@ -4,6 +4,9 @@
 
 #define DS1302_CMD_BURST_READ   0xBFU
 #define DS1302_CMD_BURST_WRITE  0xBEU
+#define DS1302_CMD_RAM_WRITE(a) (0xC0U | (uint8_t)(((a) & 0x1FU) << 1U))
+#define DS1302_CMD_RAM_READ(a)  (0xC1U | (uint8_t)(((a) & 0x1FU) << 1U))
+#define DS1302_RAM_SIZE         31U
 #define DS1302_CMD_WRITE_PROT   0x8EU
 #define DS1302_WRITE_PROT_ON    0x80U
 #define DS1302_SECONDS_CH       0x80U
@@ -292,6 +295,59 @@ hal_ds1302_status_t hal_ds1302_write_time(const hal_ds1302_datetime_t *datetime)
     for (i = 0; i < 8U; i++) {
         ds1302_write_byte(values[i]);
     }
+    ds1302_end();
+
+    ds1302_begin();
+    ds1302_write_byte(DS1302_CMD_WRITE_PROT);
+    ds1302_write_byte(DS1302_WRITE_PROT_ON);
+    ds1302_end();
+
+    return HAL_DS1302_OK;
+}
+
+/*****************************************************************************
+ * @name       :hal_ds1302_status_t hal_ds1302_read_ram(...)
+ * @function   :Read one byte from DS1302 31-byte battery-backed RAM
+ * @parameters :addr: RAM byte index (0..30); value: Output byte pointer
+ * @retvalue   :RTC status code
+ ******************************************************************************/
+hal_ds1302_status_t hal_ds1302_read_ram(uint8_t addr, uint8_t *value)
+{
+    if (value == 0 || addr >= DS1302_RAM_SIZE) {
+        return HAL_DS1302_INVALID_ARGUMENT;
+    }
+
+    ds1302_write_mode();
+    ds1302_begin();
+    ds1302_write_byte(DS1302_CMD_RAM_READ(addr));
+    ds1302_read_mode();
+    *value = ds1302_read_byte();
+    ds1302_end();
+
+    return HAL_DS1302_OK;
+}
+
+/*****************************************************************************
+ * @name       :hal_ds1302_status_t hal_ds1302_write_ram(...)
+ * @function   :Write one byte to DS1302 31-byte battery-backed RAM
+ * @parameters :addr: RAM byte index (0..30); value: Byte to write
+ * @retvalue   :RTC status code
+ ******************************************************************************/
+hal_ds1302_status_t hal_ds1302_write_ram(uint8_t addr, uint8_t value)
+{
+    if (addr >= DS1302_RAM_SIZE) {
+        return HAL_DS1302_INVALID_ARGUMENT;
+    }
+
+    ds1302_write_mode();
+    ds1302_begin();
+    ds1302_write_byte(DS1302_CMD_WRITE_PROT);
+    ds1302_write_byte(0x00U);
+    ds1302_end();
+
+    ds1302_begin();
+    ds1302_write_byte(DS1302_CMD_RAM_WRITE(addr));
+    ds1302_write_byte(value);
     ds1302_end();
 
     ds1302_begin();
