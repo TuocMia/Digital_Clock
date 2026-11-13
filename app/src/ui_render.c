@@ -1,5 +1,5 @@
 #include "ui_render.h"
-#include "dev_st7735.h"
+#include "st7789.h"
 
 void ui_draw_frame(const AppData *d)
 {
@@ -8,5 +8,5 @@ void ui_draw_frame(const AppData *d)
 
 void ui_render(const AppData *d)
 {
-    (void)d;   /* TODO: ve lai chu so thay doi bang st7735_fill (7 doan), chu, gach chan */
+    (void)d;   /* TODO: ve lai chu so thay doi (7 doan: LCD_SetWindows + Lcd_WriteData_16Bit), chu, gach chan */
 }

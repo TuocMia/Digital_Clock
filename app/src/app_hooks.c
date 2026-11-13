@@ -5,5 +5,13 @@
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
     (void)xTask; (void)pcTaskName;
+    taskDISABLE_INTERRUPTS();
+    for (;;);
+}
+
+/* Can configUSE_MALLOC_FAILED_HOOK = 1: het heap khi tao task/queue */
+void vApplicationMallocFailedHook(void)
+{
+    taskDISABLE_INTERRUPTS();
     for (;;);
 }
