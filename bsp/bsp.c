@@ -10,12 +10,13 @@
  *
  *   Chan          | Port  | Pin | Che do        | Chuc nang
  *   --------------|-------|-----|---------------|---------------------------
- *   DS1302 CE     | GPIOA |  1  | OUT_PP        | Chip Enable DS1302
- *   DS1302 CLK    | GPIOA |  2  | OUT_PP        | Clock DS1302
- *   DS1302 IO     | GPIOA |  4  | OUT_PP        | Data DS1302 (doi IN/OUT)
+ *   DS1302 CE     | GPIOA |  4  | OUT_PP        | Chip Enable DS1302
+ *   DS1302 CLK    | GPIOA |  5  | OUT_PP        | Clock DS1302
+ *   DS1302 IO     | GPIOA |  7  | OUT_PP        | Data DS1302 (doi IN/OUT)
  *   Nut bam       | GPIOA |  0  | IN_PU         | Nhan = 0 (noi GND) - PA0
  *   Bien tro      | GPIOA |  3  | AIN           | ADC1 kenh 3 - PA3
  *   Buzzer        | GPIOA |  8  | OUT_PP        | Muc cao = keu
+ *   LCD LED (BL)  | GPIOB |  9  | OUT_PP        | Backlight ST7789
  *   LCD RS (DC)   | GPIOB | 10  | OUT_PP        | Data/Command ST7789
  *   LCD RST       | GPIOB | 12  | OUT_PP        | Reset LCD
  *   LED BluePill  | GPIOC | 13  | OUT_PP        | Muc thap = sang
@@ -27,9 +28,9 @@
 void bsp_init(void)
 {
     /* ---- DS1302: 3 chan dieu khien (bit-bang) ---- */
-    hal_gpio_init(DS_PORT, DS_CE_PIN,  HAL_GPIO_OUT_PP);   /* PA1 */
-    hal_gpio_init(DS_PORT, DS_CLK_PIN, HAL_GPIO_OUT_PP);   /* PA2 */
-    hal_gpio_init(DS_PORT, DS_IO_PIN,  HAL_GPIO_OUT_PP);   /* PA4 */
+    hal_gpio_init(DS_PORT, DS_CE_PIN,  HAL_GPIO_OUT_PP);   /* PA4 */
+    hal_gpio_init(DS_PORT, DS_CLK_PIN, HAL_GPIO_OUT_PP);   /* PA5 */
+    hal_gpio_init(DS_PORT, DS_IO_PIN,  HAL_GPIO_OUT_PP);   /* PA7 */
 
     /* ---- Nut bam: input pull-up, nhan = LOW ---- */
     hal_gpio_init(BTN_PORT, BTN_PIN,   HAL_GPIO_IN_PU);    /* PA0 */
