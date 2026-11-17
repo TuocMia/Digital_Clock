@@ -45,6 +45,9 @@ static void prvPotTask(void *pvParameters)
                 uint16_t average =
                     (uint16_t)((sum + (POT_AVG_SAMPLES / 2U)) /
                                POT_AVG_SAMPLES);
+                
+                average = (uint16_t)(average & 0xFFF0U);
+                
                 uint16_t difference =
                     (average >= last_reported_value)
                         ? (average - last_reported_value)
