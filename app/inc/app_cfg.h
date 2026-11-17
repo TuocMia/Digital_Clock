@@ -49,7 +49,7 @@
 #define TASK_BUTTON_PERIOD_MS   10
 #define TASK_POT_PERIOD_MS      20
 #define TASK_RTC_PERIOD_MS      250
-#define TASK_ALARM_PERIOD_MS    250     /* cung la chu ky dao buzzer/LED khi keu */
+#define TASK_ALARM_PERIOD_MS    50     /* cung la chu ky dao buzzer/LED khi keu */
 #define TASK_DISPLAY_TIMEOUT_MS 500     /* ve lai dinh ky ke ca khi khong co EV_REDRAW */
 
 #define DATA_MUTEX_TIMEOUT_MS   20      /* cho M_DATA toi da, khong block vinh vien */
