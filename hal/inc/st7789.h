@@ -27,43 +27,43 @@ typedef struct
     u8  yoffset; /**< Hardware Y offset */
 } _lcd_dev;
 
-extern _lcd_dev lcddev;
+extern _lcd_dev lcddev; /**< Global LCD runtime descriptor */
 
 /* User configuration */
-#define USE_HORIZONTAL  0
+#define USE_HORIZONTAL  0   /**< Display orientation index (0..3) */
 
 /* LCD dimensions */
-#define LCD_W 240
-#define LCD_H 240
+#define LCD_W 240           /**< Panel width in pixels */
+#define LCD_H 240           /**< Panel height in pixels */
 
 /* LCD control pins */
-#define LCD_GPIO_PORT   GPIOB
-#define LCD_LED_PIN     GPIO_Pin_9
-#define LCD_RS_PIN      GPIO_Pin_10
-#define LCD_RST_PIN     GPIO_Pin_12
+#define LCD_GPIO_PORT   GPIOB       /**< GPIO port for LCD control pins */
+#define LCD_LED_PIN     GPIO_Pin_9  /**< Backlight control pin (PB9) */
+#define LCD_RS_PIN      GPIO_Pin_10 /**< Data/Command select pin (PB10) */
+#define LCD_RST_PIN     GPIO_Pin_12 /**< Hardware reset pin (PB12) */
 
 /* Drawing colors */
-extern u16 POINT_COLOR;
-extern u16 BACK_COLOR;
+extern u16 POINT_COLOR; /**< Active foreground RGB565 color */
+extern u16 BACK_COLOR;  /**< Active background RGB565 color */
 
 /* Colors */
-#define WHITE       0xFFFF
-#define BLACK       0x0000
-#define BLUE        0x001F
-#define BRED        0xF81F
-#define GRED        0xFFE0
-#define GBLUE       0x07FF
-#define RED         0xF800
-#define MAGENTA     0xF81F
-#define GREEN       0x07E0
-#define CYAN        0x7FFF
-#define YELLOW      0xFFE0
-#define BROWN       0xBC40
-#define BRRED       0xFC07
-#define GRAY        0x8430
-#define GRAY0       0xEF7D
-#define GRAY1       0x8410
-#define GRAY2       0x4208
+#define WHITE       0xFFFF  /**< RGB565 White */
+#define BLACK       0x0000  /**< RGB565 Black */
+#define BLUE        0x001F  /**< RGB565 Blue */
+#define BRED        0xF81F  /**< RGB565 Bright Red / Magenta */
+#define GRED        0xFFE0  /**< RGB565 Green-Red / Yellow */
+#define GBLUE       0x07FF  /**< RGB565 Green-Blue / Cyan */
+#define RED         0xF800  /**< RGB565 Red */
+#define MAGENTA     0xF81F  /**< RGB565 Magenta */
+#define GREEN       0x07E0  /**< RGB565 Green */
+#define CYAN        0x7FFF  /**< RGB565 Light Cyan */
+#define YELLOW      0xFFE0  /**< RGB565 Yellow */
+#define BROWN       0xBC40  /**< RGB565 Brown */
+#define BRRED       0xFC07  /**< RGB565 Brownish Red */
+#define GRAY        0x8430  /**< RGB565 Gray */
+#define GRAY0       0xEF7D  /**< RGB565 Light Gray 0 */
+#define GRAY1       0x8410  /**< RGB565 Medium Gray 1 */
+#define GRAY2       0x4208  /**< RGB565 Dark Gray 2 */
 
 /**
   * @brief  Initialize SPI2, reset ST7789, configure RGB565 240x240, and turn on backlight.

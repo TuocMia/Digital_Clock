@@ -16,6 +16,10 @@
 
 static TaskHandle_t xButtonTaskHandle = NULL;
 
+/**
+ * @brief  FreeRTOS task that polls PA0 every 10 ms, debounces 30 ms, and posts EVT_BTN on press edge.
+ * @param  pvParameters Unused task argument.
+ */
 static void prvButtonTask(void *pvParameters)
 {
     (void)pvParameters;
@@ -48,6 +52,10 @@ static void prvButtonTask(void *pvParameters)
     }
 }
 
+/**
+ * @brief  Create the T_Button FreeRTOS task.
+ * @return pdPASS on success, errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY on failure.
+ */
 BaseType_t task_button_create(void)
 {
     return xTaskCreate(prvButtonTask, "BUTTON", TASK_BUTTON_STACK, NULL, TASK_BUTTON_PRIO, &xButtonTaskHandle);

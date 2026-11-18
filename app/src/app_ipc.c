@@ -16,6 +16,10 @@ SemaphoreHandle_t  xDataMutex  = NULL;
 EventGroupHandle_t xEventGroup = NULL;
 AppData            g_app;
 
+/**
+ * @brief  Reset g_app and create Q_EVT, Q_RTC, M_DATA mutex, and xEventGroup.
+ * @retval pdPASS if all IPC objects were created, pdFAIL otherwise.
+ */
 BaseType_t app_ipc_init(void)
 {
     memset(&g_app, 0, sizeof(g_app));
@@ -36,11 +40,18 @@ BaseType_t app_ipc_init(void)
     return pdPASS;
 }
 
+/**
+ * @brief  Acquire M_DATA mutex protecting g_app with timeout DATA_MUTEX_TIMEOUT_MS.
+ * @retval pdTRUE if acquired, pdFALSE on timeout.
+ */
 BaseType_t app_data_lock(void)
 {
     return xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(DATA_MUTEX_TIMEOUT_MS));
 }
 
+/**
+ * @brief  Release M_DATA mutex after reading or updating g_app.
+ */
 void app_data_unlock(void)
 {
     xSemaphoreGive(xDataMutex);

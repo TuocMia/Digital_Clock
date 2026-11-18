@@ -31,65 +31,65 @@
 /* ------------------------------------------------------------------ */
 /* Uu tien (so lon = uu tien cao)                                      */
 /* ------------------------------------------------------------------ */
-#define TASK_BUTTON_PRIO        (tskIDLE_PRIORITY + 3)
-#define TASK_CTRL_PRIO          (tskIDLE_PRIORITY + 3)
-#define TASK_ALARM_PRIO         (tskIDLE_PRIORITY + 3)
-#define TASK_POT_PRIO           (tskIDLE_PRIORITY + 2)
-#define TASK_RTC_PRIO           (tskIDLE_PRIORITY + 2)
-#define TASK_DISPLAY_PRIO       (tskIDLE_PRIORITY + 1)
+#define TASK_BUTTON_PRIO        (tskIDLE_PRIORITY + 3) /**< Priority of T_Button */
+#define TASK_CTRL_PRIO          (tskIDLE_PRIORITY + 3) /**< Priority of T_Ctrl */
+#define TASK_ALARM_PRIO         (tskIDLE_PRIORITY + 3) /**< Priority of T_Alarm */
+#define TASK_POT_PRIO           (tskIDLE_PRIORITY + 2) /**< Priority of T_Pot */
+#define TASK_RTC_PRIO           (tskIDLE_PRIORITY + 2) /**< Priority of T_RTC */
+#define TASK_DISPLAY_PRIO       (tskIDLE_PRIORITY + 1) /**< Priority of T_Display */
 
 /* ------------------------------------------------------------------ */
 /* Stack (words, 1 word = 4 byte)                                      */
 /* ------------------------------------------------------------------ */
-#define TASK_BUTTON_STACK       128
-#define TASK_POT_STACK          128
-#define TASK_CTRL_STACK         192
-#define TASK_RTC_STACK          160
-#define TASK_ALARM_STACK        128
-#define TASK_DISPLAY_STACK      256
+#define TASK_BUTTON_STACK       128 /**< Stack size of T_Button in 32-bit words */
+#define TASK_POT_STACK          128 /**< Stack size of T_Pot in 32-bit words */
+#define TASK_CTRL_STACK         192 /**< Stack size of T_Ctrl in 32-bit words */
+#define TASK_RTC_STACK          160 /**< Stack size of T_RTC in 32-bit words */
+#define TASK_ALARM_STACK        128 /**< Stack size of T_Alarm in 32-bit words */
+#define TASK_DISPLAY_STACK      256 /**< Stack size of T_Display in 32-bit words */
 
 /* ------------------------------------------------------------------ */
 /* Chu ky / timeout (ms)                                               */
 /* ------------------------------------------------------------------ */
-#define TASK_BUTTON_PERIOD_MS   10
-#define TASK_POT_PERIOD_MS      20
-#define TASK_RTC_PERIOD_MS      250
-#define TASK_ALARM_PERIOD_MS    250     /* cung la chu ky dao buzzer/LED khi keu */
-#define TASK_DISPLAY_TIMEOUT_MS 500     /* ve lai dinh ky ke ca khi khong co EV_REDRAW */
+#define TASK_BUTTON_PERIOD_MS   10      /**< Button scan period in ms */
+#define TASK_POT_PERIOD_MS      20      /**< Potentiometer ADC sampling period in ms */
+#define TASK_RTC_PERIOD_MS      250     /**< DS1302 RTC polling period in ms */
+#define TASK_ALARM_PERIOD_MS    250     /**< Alarm check and buzzer/LED cadence tick in ms */
+#define TASK_DISPLAY_TIMEOUT_MS 500     /**< Max wait for EV_REDRAW before periodic LCD refresh in ms */
 
-#define DATA_MUTEX_TIMEOUT_MS   20      /* cho M_DATA toi da, khong block vinh vien */
-#define Q_EVT_SEND_TIMEOUT_MS   0       /* T_Button/T_Pot: queue day thi bo su kien */
-#define Q_RTC_SEND_TIMEOUT_MS   10      /* T_Ctrl -> T_RTC */
+#define DATA_MUTEX_TIMEOUT_MS   20      /**< Max wait for M_DATA mutex in ms */
+#define Q_EVT_SEND_TIMEOUT_MS   0       /**< T_Button/T_Pot drop event if Q_EVT is full */
+#define Q_RTC_SEND_TIMEOUT_MS   10      /**< Max wait when T_Ctrl queues a command to T_RTC */
 
 /* ------------------------------------------------------------------ */
 /* Queue (do dai; kieu phan tu dinh nghia trong app_ipc.h)             */
 /* ------------------------------------------------------------------ */
-#define Q_EVT_LEN               8       /* phan tu: Evt    */
-#define Q_RTC_LEN               4       /* phan tu: RtcCmd */
+#define Q_EVT_LEN               8       /**< Capacity of xEvtQueue (elements of Evt) */
+#define Q_RTC_LEN               4       /**< Capacity of xRtcQueue (elements of RtcCmd) */
 
 /* ------------------------------------------------------------------ */
 /* Event group bits (xEventGroup)                                      */
 /* ------------------------------------------------------------------ */
-#define EV_REDRAW               (1U << 0)   /* -> T_Display: ve lai          */
-#define EV_DISMISS              (1U << 1)   /* -> T_Alarm  : tat chuong      */
+#define EV_REDRAW               (1U << 0)   /**< Event bit -> T_Display: redraw screen */
+#define EV_DISMISS              (1U << 1)   /**< Event bit -> T_Alarm: dismiss ringing alarm */
 
 /* ------------------------------------------------------------------ */
 /* Nguong nhap lieu                                                    */
 /* ------------------------------------------------------------------ */
-#define BTN_DEBOUNCE_SAMPLES    3       /* 3 mau x 10 ms = 30 ms */
-#define POT_AVG_SAMPLES         8       /* T_Pot lay trung binh 8 mau ADC */
-#define POT_ADC_MAX             4095U   /* ADC 12 bit */
-#define POT_REPORT_DELTA        12      /* T_Pot chi gui khi ADC lech >= 12 so voi lan gui truoc */
-#define POT_ARM_DELTA           24      /* T_Ctrl bo qua bien tro sau khi vao buoc moi cho den khi nup lech >= 24 */
-#define POT_ONOFF_THRESHOLD     2048U   /* S5: < nguong = TAT, >= nguong = BAT */
+#define BTN_DEBOUNCE_SAMPLES    3       /**< Consecutive samples for debounce (3 x 10 ms = 30 ms) */
+#define POT_AVG_SAMPLES         8       /**< Number of ADC samples averaged per T_Pot cycle */
+#define POT_ADC_MAX             4095U   /**< 12-bit ADC full-scale value */
+#define POT_REPORT_DELTA        12      /**< Min ADC delta for T_Pot to emit EVT_POT */
+#define POT_ARM_DELTA           24      /**< Min ADC delta to arm potentiometer after state change */
+#define POT_ONOFF_THRESHOLD     2048U   /**< S8 (ST_ALARM_EN): < threshold = OFF, >= threshold = ON */
 
 /* ------------------------------------------------------------------ */
 /* Bo tri RAM DS1302 (31 byte) luu gio hen                             */
 /* ------------------------------------------------------------------ */
-#define DS_RAM_ADDR_MAGIC       0       /* = DS_RAM_MAGIC neu du lieu hop le */
-#define DS_RAM_ADDR_ALARM_H     1       /* 0..23 */
-#define DS_RAM_ADDR_ALARM_M     2       /* 0..59 */
-#define DS_RAM_ADDR_ALARM_EN    3       /* 0 = tat, 1 = bat */
-#define DS_RAM_MAGIC            0xA5
+#define DS_RAM_ADDR_MAGIC       0       /**< DS1302 RAM index 0: magic byte (DS_RAM_MAGIC if valid) */
+#define DS_RAM_ADDR_ALARM_H     1       /**< DS1302 RAM index 1: alarm hour (0..23) */
+#define DS_RAM_ADDR_ALARM_M     2       /**< DS1302 RAM index 2: alarm minute (0..59) */
+#define DS_RAM_ADDR_ALARM_EN    3       /**< DS1302 RAM index 3: alarm enable flag (0 or 1) */
+#define DS_RAM_MAGIC            0xA5    /**< Magic signature validating stored alarm data */
 
 #endif

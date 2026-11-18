@@ -17,6 +17,10 @@
 
 static TaskHandle_t xDisplayTaskHandle = NULL;
 
+/**
+ * @brief  FreeRTOS task that owns the ST7789 LCD, waits for EV_REDRAW (or 500 ms), and renders UI.
+ * @param  pvParameters Unused task argument.
+ */
 static void prvDisplayTask(void *pvParameters)
 {
     (void)pvParameters;
@@ -54,6 +58,10 @@ static void prvDisplayTask(void *pvParameters)
     }
 }
 
+/**
+ * @brief  Create the T_Display FreeRTOS task.
+ * @return pdPASS on success, errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY on failure.
+ */
 BaseType_t task_display_create(void)
 {
     return xTaskCreate(prvDisplayTask, "DISPLAY", TASK_DISPLAY_STACK, NULL, TASK_DISPLAY_PRIO, &xDisplayTaskHandle);

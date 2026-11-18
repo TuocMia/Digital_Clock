@@ -1,6 +1,6 @@
 /**
  * @file    task_ctrl.h
- * @brief   System state machine (S0..S5) and input coordinator FreeRTOS task.
+ * @brief   System state machine (S0..S8) and input coordinator FreeRTOS task.
  */
 
 #ifndef TASK_CTRL_H

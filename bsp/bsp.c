@@ -10,10 +10,9 @@
 #include "bsp_pins.h"
 #include "hal_gpio.h"
 
-/*
+/**
  ******************************************************************************
- * @brief  Khoi tao toan bo phan cung (GPIO) cho project Digital Clock
- *
+ * @brief  Khoi tao toan bo phan cung (GPIO) cho project Digital Clock.
  * @note   Cau hinh cac chan theo bang bsp_pins.h:
  *
  *   Chan          | Port  | Pin | Che do        | Chuc nang
@@ -30,7 +29,6 @@
  *   LED BluePill  | GPIOC | 13  | OUT_PP        | Muc thap = sang
  *
  *   (SPI2 SCK=PB13, MOSI=PB15 duoc cau hinh trong hal_spi.c / SPI2_Init)
- *
  ******************************************************************************
  */
 void bsp_init(void)
@@ -59,12 +57,10 @@ void bsp_init(void)
     hal_gpio_set(LED_PORT, LED_PIN);                         /* LED tat ban dau (HIGH = tat) */
 }
 
-/*
- * @brief  Dieu khien buzzer
- * @param  on: 1 = keu (set HIGH), 0 = tat (set LOW)
- *
- * @note   Buzzer chu dong: cap muc cao => keu, muc thap => im
- *         Su dung BSRR/BRR de thao tac atomic, an toan trong FreeRTOS
+/**
+ * @brief  Dieu khien buzzer chu dong.
+ * @param  on 1 = keu (set HIGH), 0 = tat (set LOW).
+ * @note   Su dung BSRR/BRR de thao tac atomic, an toan trong FreeRTOS.
  */
 void bsp_buzzer_set(uint8_t on)
 {
@@ -74,13 +70,9 @@ void bsp_buzzer_set(uint8_t on)
         hal_gpio_clear(BUZ_PORT, BUZ_PIN);  /* PA8 = LOW  => buzzer tat */
 }
 
-/*
- * @brief  Dieu khien LED tren board BluePill
- * @param  on: 1 = sang (set LOW), 0 = tat (set HIGH)
- *
- * @note   LED tren BluePill noi ACTIVE LOW:
- *         PC13 = LOW  => LED sang
- *         PC13 = HIGH => LED tat
+/**
+ * @brief  Dieu khien LED tren board BluePill (PC13, active-low).
+ * @param  on 1 = sang (set LOW), 0 = tat (set HIGH).
  */
 void bsp_led_set(uint8_t on)
 {
@@ -90,14 +82,10 @@ void bsp_led_set(uint8_t on)
         hal_gpio_set(LED_PORT, LED_PIN);    /* PC13 = HIGH => LED tat  */
 }
 
-/*
- * @brief  Doc trang thai nut bam
- * @retval 1 neu dang nhan, 0 neu tha
- *
- * @note   Nut bam noi GND voi pull-up noi:
- *         - Tha: IDR = 1 (keo len boi pull-up)
- *         - Nhan: IDR = 0 (noi truc tiep GND)
- *         => Dao logic: return !read
+/**
+ * @brief  Doc trang thai nut bam (PA0, pull-up noi, nhan = 0).
+ * @retval 1 neu dang nhan, 0 neu tha.
+ */
  */
 uint8_t bsp_button_pressed(void)
 {

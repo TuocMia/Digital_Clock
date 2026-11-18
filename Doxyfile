@@ -2,7 +2,7 @@
 
 PROJECT_NAME           = "Digital Clock (STM32 + FreeRTOS)"
 PROJECT_NUMBER         = "v1.0.0"
-PROJECT_BRIEF          = "Dong ho dien tu dung STM32F103C8T6, DS1302 RTC, ST7789 LCD va FreeRTOS"
+PROJECT_BRIEF          = "STM32F103C8T6 FreeRTOS Digital Clock with DS1302 RTC, ST7789 240x240 LCD, and Vietnamese Lunar Calendar"
 
 OUTPUT_DIRECTORY       = docs/doxygen
 CREATE_SUBDIRS         = NO
@@ -10,14 +10,16 @@ OUTPUT_LANGUAGE        = English
 
 OPTIMIZE_OUTPUT_FOR_C  = YES
 JAVADOC_AUTOBRIEF      = YES
-EXTRACT_ALL            = YES
+EXTRACT_ALL            = NO
 EXTRACT_PRIVATE        = NO
-EXTRACT_STATIC         = YES
+EXTRACT_STATIC         = NO
+FULL_PATH_NAMES        = NO
+SORT_BRIEF_DOCS        = YES
 
 INPUT                  = README.md main.c bsp hal app
 FILE_PATTERNS          = *.c *.h *.md
 RECURSIVE              = YES
-EXCLUDE_PATTERNS       = */middlewares/* */tests/* */stm32f10x_* */system_stm32f10x.c
+EXCLUDE_PATTERNS       = */middlewares/* */tests/* */stm32f10x_* */system_stm32f10x.c */FreeRTOSConfig.h
 USE_MDFILE_AS_MAINPAGE = README.md
 
 SOURCE_BROWSER         = YES
@@ -29,5 +31,7 @@ HTML_OUTPUT            = html
 GENERATE_LATEX         = NO
 
 HAVE_DOT               = NO
-QUIET                  = NO
+QUIET                  = YES
 WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES

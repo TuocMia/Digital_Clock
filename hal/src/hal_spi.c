@@ -5,12 +5,12 @@
 
 #include "hal_spi.h"
 
-/*
-  * @brief  Write and receive one byte using STM32 hardware SPI
-  * @param  SPIx: SPI peripheral (SPI1, SPI2, SPI3)
-  * @param  Byte: Data to be transmitted
-  * @retval Data received from the SPI bus
-  */
+/**
+ * @brief  Transmit and receive one byte using STM32 hardware SPI.
+ * @param  SPIx SPI peripheral pointer (e.g. SPI2).
+ * @param  Byte Data byte to transmit.
+ * @return Data byte received from the SPI bus.
+ */
 u8 SPI_WriteByte(SPI_TypeDef *SPIx, u8 Byte)
 {
     /* Wait for TX buffer empty */
@@ -26,13 +26,11 @@ u8 SPI_WriteByte(SPI_TypeDef *SPIx, u8 Byte)
     return (u8)SPI_I2S_ReceiveData(SPIx);
 }
 
-/*
-  * @brief  Set hardware SPI communication speed
-  * @param  SPIx: SPI peripheral (SPI1, SPI2, SPI3)
-  * @param  SpeedSet: 0 - low speed
-  *         1 - high speed
-  * @retval None
-  */
+/**
+ * @brief  Set hardware SPI baud rate prescaler.
+ * @param  SPIx     SPI peripheral pointer.
+ * @param  SpeedSet 1 for high speed (div 2), 0 for low speed (div 32).
+ */
 void SPI_SetSpeed(SPI_TypeDef *SPIx, u8 SpeedSet)
 {
     /* Disable SPI before changing speed */
@@ -46,10 +44,9 @@ void SPI_SetSpeed(SPI_TypeDef *SPIx, u8 SpeedSet)
     SPI_Cmd(SPIx, ENABLE);
 }
 
-/*
-  * @brief  Initialize the STM32 hardware SPI2
-  * @retval None
-  */
+/**
+ * @brief  Initialize SPI2 in 8-bit master mode (CPOL=High, CPHA=2Edge) on PB13/PB14/PB15.
+ */
 void SPI2_Init(void)
 {
     SPI_InitTypeDef SPI_InitStructure;

@@ -22,6 +22,14 @@
 
 static TaskHandle_t xCtrlTaskHandle = NULL;
 
+/**
+ * @brief  Increment or decrement a bounded integer with wrap-around.
+ * @param  cur     Current field value.
+ * @param  dir     Step direction (> 0 to increment, <= 0 to decrement).
+ * @param  min_val Inclusive lower bound.
+ * @param  max_val Inclusive upper bound.
+ * @return Updated value wrapped within [min_val, max_val].
+ */
 static uint8_t step_wrap_range(uint8_t cur, int8_t dir, uint8_t min_val, uint8_t max_val)
 {
     if (dir > 0) {
@@ -30,6 +38,16 @@ static uint8_t step_wrap_range(uint8_t cur, int8_t dir, uint8_t min_val, uint8_t
     return (cur <= min_val) ? max_val : (uint8_t)(cur - 1U);
 }
 
+/**
+ * @brief  Apply relative potentiometer ADC steps to an edited field.
+ * @param  field   Pointer to the edited field to update.
+ * @param  min_val Inclusive lower bound.
+ * @param  max_val Inclusive upper bound.
+ * @param  step    ADC delta required per single step.
+ * @param  adc_val Latest 12-bit ADC reading.
+ * @param  arm_ref In/out reference ADC value updated by each consumed step.
+ * @return 1 if *field changed, 0 otherwise.
+ */
 static uint8_t apply_pot_steps(uint8_t *field, uint8_t min_val, uint8_t max_val,
                                uint16_t step, uint16_t adc_val, uint16_t *arm_ref)
 {
@@ -52,6 +70,10 @@ static uint8_t apply_pot_steps(uint8_t *field, uint8_t min_val, uint8_t max_val,
     return changed;
 }
 
+/**
+ * @brief  FreeRTOS task managing the S0..S8 state machine and dispatching Q_RTC / EV_REDRAW / EV_DISMISS.
+ * @param  pvParameters Unused task argument.
+ */
 static void prvCtrlTask(void *pvParameters)
 {
     (void)pvParameters;
@@ -198,6 +220,10 @@ static void prvCtrlTask(void *pvParameters)
     }
 }
 
+/**
+ * @brief  Create the T_Ctrl FreeRTOS task.
+ * @return pdPASS on success, errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY on failure.
+ */
 BaseType_t task_ctrl_create(void)
 {
     return xTaskCreate(prvCtrlTask, "CTRL", TASK_CTRL_STACK, NULL, TASK_CTRL_PRIO, &xCtrlTaskHandle);

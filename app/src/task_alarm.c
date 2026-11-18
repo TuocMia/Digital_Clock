@@ -36,6 +36,10 @@ static const AlarmStep_t alarm_pattern[] = {
 
 static TaskHandle_t xAlarmTaskHandle = NULL;
 
+/**
+ * @brief  Update g_app.alarm_ringing under M_DATA and trigger EV_REDRAW when changed.
+ * @param  ring 1 when alarm is actively ringing, 0 when silent.
+ */
 static void prvAlarmSetRingState(uint8_t ring)
 {
     BaseType_t changed = pdFALSE;
@@ -54,6 +58,10 @@ static void prvAlarmSetRingState(uint8_t ring)
     }
 }
 
+/**
+ * @brief  FreeRTOS task that compares RTC time with alarm every 250 ms and drives buzzer/LED cadence.
+ * @param  pvParameters Unused task argument.
+ */
 static void prvAlarmTask(void *pvParameters)
 {
     TickType_t last_wake_time;
@@ -170,6 +178,10 @@ static void prvAlarmTask(void *pvParameters)
     }
 }
 
+/**
+ * @brief  Create the T_Alarm FreeRTOS task.
+ * @return pdPASS on success, errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY on failure.
+ */
 BaseType_t task_alarm_create(void)
 {
     return xTaskCreate(prvAlarmTask,

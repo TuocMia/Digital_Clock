@@ -13,12 +13,12 @@
 #include "stm32f10x_conf.h"
 
 /* GPIOA mapping: PA0 is reserved for the button and PA3 for the ADC pot. */
-#define HAL_DS1302_CE_PORT   GPIOA
-#define HAL_DS1302_CE_PIN    GPIO_Pin_4
-#define HAL_DS1302_SCLK_PORT GPIOA
-#define HAL_DS1302_SCLK_PIN  GPIO_Pin_5
-#define HAL_DS1302_IO_PORT   GPIOA
-#define HAL_DS1302_IO_PIN    GPIO_Pin_7
+#define HAL_DS1302_CE_PORT   GPIOA       /**< GPIO port for DS1302 CE line */
+#define HAL_DS1302_CE_PIN    GPIO_Pin_4  /**< DS1302 Chip Enable pin (PA4) */
+#define HAL_DS1302_SCLK_PORT GPIOA       /**< GPIO port for DS1302 SCLK line */
+#define HAL_DS1302_SCLK_PIN  GPIO_Pin_5  /**< DS1302 Serial Clock pin (PA5) */
+#define HAL_DS1302_IO_PORT   GPIOA       /**< GPIO port for DS1302 IO line */
+#define HAL_DS1302_IO_PIN    GPIO_Pin_7  /**< DS1302 Bidirectional Data pin (PA7) */
 
 /**
   * @brief Date and time structure in binary (24-hour) format.

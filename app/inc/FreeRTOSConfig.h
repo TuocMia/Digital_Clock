@@ -51,6 +51,7 @@ extern uint32_t SystemCoreClock;
 #define INCLUDE_uxTaskPriorityGet               0
 #define INCLUDE_vTaskPrioritySet                0
 #define INCLUDE_uxTaskGetStackHighWaterMark     1   /* kiem tra stack khi review PR */
+#define INCLUDE_xTaskGetHandle                  1
 #define INCLUDE_xTaskGetSchedulerState          1
 
 /* ---- Ngat Cortex-M3 (STM32F1: 4 bit uu tien) ---- */

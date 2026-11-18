@@ -18,11 +18,21 @@
 
 static TaskHandle_t xRtcTaskHandle = NULL;
 
+/**
+ * @brief  Convert DS1302 read status into the boolean rtc_ok flag.
+ * @param  status Return code from hal_ds1302_read_time().
+ * @return 1 if HAL_DS1302_OK, 0 otherwise.
+ */
 static uint8_t rtc_time_status_ok(hal_ds1302_status_t status)
 {
     return (status == HAL_DS1302_OK) ? 1U : 0U;
 }
 
+/**
+ * @brief  Publish DS1302 date/time to g_app under M_DATA and set EV_REDRAW if any field changed.
+ * @param  datetime Pointer to the newly read date/time.
+ * @param  read_ok  1 if DS1302 clock is valid and running, 0 otherwise.
+ */
 static void rtc_publish_time(const hal_ds1302_datetime_t *datetime,
                              uint8_t read_ok)
 {
@@ -57,6 +67,9 @@ static void rtc_publish_time(const hal_ds1302_datetime_t *datetime,
     }
 }
 
+/**
+ * @brief  Clear g_app.rtc_ok on DS1302 communication/validation error and trigger EV_REDRAW.
+ */
 static void rtc_publish_error(void)
 {
     uint8_t redraw = 0U;
@@ -77,6 +90,9 @@ static void rtc_publish_error(void)
     }
 }
 
+/**
+ * @brief  Load saved alarm hour, minute, and enable flag from DS1302 RAM at startup.
+ */
 static void rtc_load_alarm_from_ram(void)
 {
     uint8_t magic;
@@ -112,6 +128,11 @@ static void rtc_load_alarm_from_ram(void)
     xEventGroupSetBits(xEventGroup, EV_REDRAW);
 }
 
+/**
+ * @brief  Persist alarm settings to DS1302 RAM using magic-byte write-last protection.
+ * @param  command Pointer to CMD_SET_ALARM RtcCmd payload.
+ * @retval HAL_DS1302_OK on success or error status.
+ */
 static hal_ds1302_status_t rtc_store_alarm(const RtcCmd *command)
 {
     hal_ds1302_status_t status;
@@ -145,6 +166,10 @@ static hal_ds1302_status_t rtc_store_alarm(const RtcCmd *command)
     return hal_ds1302_write_ram(DS_RAM_ADDR_MAGIC, DS_RAM_MAGIC);
 }
 
+/**
+ * @brief  Execute one RtcCmd (CMD_SET_TIME, CMD_SET_DATE, or CMD_SET_ALARM) against DS1302.
+ * @param  command Pointer to dequeued command.
+ */
 static void rtc_handle_command(const RtcCmd *command)
 {
     hal_ds1302_status_t status;
@@ -230,6 +255,10 @@ static void rtc_handle_command(const RtcCmd *command)
     }
 }
 
+/**
+ * @brief  FreeRTOS task that polls DS1302 every 250 ms and drains Q_RTC write commands.
+ * @param  pvParameters Unused task argument.
+ */
 static void prvRtcTask(void *pvParameters)
 {
     TickType_t last_wake_time;
@@ -264,6 +293,10 @@ static void prvRtcTask(void *pvParameters)
     }
 }
 
+/**
+ * @brief  Create the T_RTC FreeRTOS task.
+ * @return pdPASS on success, errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY on failure.
+ */
 BaseType_t task_rtc_create(void)
 {
     return xTaskCreate(prvRtcTask,

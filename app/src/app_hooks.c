@@ -9,7 +9,11 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-/* Can configCHECK_FOR_STACK_OVERFLOW = 2 trong FreeRTOSConfig.hour */
+/**
+ * @brief  FreeRTOS hook called when a task overflows its stack (configCHECK_FOR_STACK_OVERFLOW == 2).
+ * @param  xTask      Handle of the offending task.
+ * @param  pcTaskName Name of the offending task.
+ */
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
     (void)xTask; (void)pcTaskName;
@@ -17,7 +21,9 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
     for (;;);
 }
 
-/* Can configUSE_MALLOC_FAILED_HOOK = 1: het heap khi tao task/queue */
+/**
+ * @brief  FreeRTOS hook called when pvPortMalloc() fails due to insufficient heap (configUSE_MALLOC_FAILED_HOOK == 1).
+ */
 void vApplicationMallocFailedHook(void)
 {
     taskDISABLE_INTERRUPTS();

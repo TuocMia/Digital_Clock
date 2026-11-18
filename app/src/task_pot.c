@@ -17,6 +17,10 @@
 
 static TaskHandle_t xPotTaskHandle = NULL;
 
+/**
+ * @brief  FreeRTOS task that samples ADC1 every 20 ms (8-sample average) and posts EVT_POT on delta >= 12.
+ * @param  pvParameters Unused task argument.
+ */
 static void prvPotTask(void *pvParameters)
 {
     TickType_t last_wake_time;
@@ -83,6 +87,10 @@ static void prvPotTask(void *pvParameters)
     }
 }
 
+/**
+ * @brief  Create the T_Pot FreeRTOS task.
+ * @return pdPASS on success, errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY on failure.
+ */
 BaseType_t task_pot_create(void)
 {
     return xTaskCreate(prvPotTask,

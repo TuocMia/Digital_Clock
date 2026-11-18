@@ -5,11 +5,10 @@
 
 #include "hal_gpio.h"
 
-/*
-  * @brief  Enable clock for the specified GPIO port
-  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
-  * @retval None
-  */
+/**
+ * @brief  Enable APB2 peripheral clock for the specified GPIO port.
+ * @param  port GPIO port pointer (GPIOA..GPIOE).
+ */
 static void hal_gpio_enable_clock(GPIO_TypeDef *port)
 {
     if (port == GPIOA) {
@@ -29,13 +28,12 @@ static void hal_gpio_enable_clock(GPIO_TypeDef *port)
     }
 }
 
-/*
-  * @brief  Configure GPIO pin mode and enable corresponding port clock
-  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
-  * @param  pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
-  * @param  mode: Pin mode (hal_gpio_mode_t)
-  * @retval None
-  */
+/**
+ * @brief  Enable port clock and configure a GPIO pin at 50 MHz.
+ * @param  port GPIO port pointer (GPIOA..GPIOE).
+ * @param  pin  GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15).
+ * @param  mode Pin operating mode (hal_gpio_mode_t).
+ */
 void hal_gpio_init(GPIO_TypeDef *port, uint16_t pin, hal_gpio_mode_t mode)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -78,36 +76,34 @@ void hal_gpio_init(GPIO_TypeDef *port, uint16_t pin, hal_gpio_mode_t mode)
     GPIO_Init(port, &GPIO_InitStructure);
 }
 
-/*
-  * @brief  Set GPIO pin to HIGH level
-  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
-  * @param  pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
-  * @retval None
-  */
+/**
+ * @brief  Set a GPIO output pin to HIGH level.
+ * @param  port GPIO port pointer.
+ * @param  pin  GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15).
+ */
 void hal_gpio_set(GPIO_TypeDef *port, uint16_t pin)
 {
     /* Set selected GPIO pin */
     GPIO_SetBits(port, pin);
 }
 
-/*
-  * @brief  Clear GPIO pin to LOW level
-  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
-  * @param  pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
-  * @retval None
-  */
+/**
+ * @brief  Clear a GPIO output pin to LOW level.
+ * @param  port GPIO port pointer.
+ * @param  pin  GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15).
+ */
 void hal_gpio_clear(GPIO_TypeDef *port, uint16_t pin)
 {
     /* Reset selected GPIO pin */
     GPIO_ResetBits(port, pin);
 }
 
-/*
-  * @brief  Read logic level of a GPIO pin
-  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
-  * @param  pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
-  * @retval 1 if HIGH, 0 if LOW
-  */
+/**
+ * @brief  Read the input logic level of a GPIO pin.
+ * @param  port GPIO port pointer.
+ * @param  pin  GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15).
+ * @retval 1 if HIGH, 0 if LOW.
+ */
 uint8_t hal_gpio_read(GPIO_TypeDef *port, uint16_t pin)
 {
     /* Read input data bit and return normalized value */
