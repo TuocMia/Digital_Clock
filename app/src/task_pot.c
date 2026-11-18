@@ -65,7 +65,7 @@ static void prvPotTask(void *pvParameters)
                     difference >= POT_REPORT_DELTA) {
                     Evt event = {
                         .type = EVT_POT,
-                        .val = average
+                        .value = average
                     };
 
                     if (xQueueSend(

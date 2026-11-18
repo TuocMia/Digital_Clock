@@ -47,14 +47,22 @@
 #define X_S1            194U
 #define X_S2            216U
 
-/* Cache trang thai ve lan truoc de chi ve lai phan thay doi */
+/**
+  * @brief Cached UI state from the previous render pass for partial redraws.
+  */
 typedef struct {
-    uint8_t valid;
-    uint8_t h, m, s;
-    uint8_t date, month, year;
-    uint8_t ah, am, aen;
-    uint8_t state;
-    uint8_t ring;
+    uint8_t valid;         /**< 1 if cache holds valid previous screen values */
+    uint8_t hour;          /**< Last rendered hour */
+    uint8_t minute;        /**< Last rendered minute */
+    uint8_t second;        /**< Last rendered second */
+    uint8_t date;          /**< Last rendered day */
+    uint8_t month;         /**< Last rendered month */
+    uint8_t year;          /**< Last rendered year */
+    uint8_t alarm_hour;    /**< Last rendered alarm hour */
+    uint8_t alarm_minute;  /**< Last rendered alarm minute */
+    uint8_t alarm_enabled; /**< Last rendered alarm enable state */
+    uint8_t state;         /**< Last rendered UI state */
+    uint8_t alarm_ringing; /**< Last rendered alarm ring flag */
 } UiCache;
 
 static UiCache s_cache;
@@ -74,10 +82,12 @@ static const uint8_t s_seg_lut[10] = {
     0x6FU  /* 9 */
 };
 
-/* Font 5x7 toi gian cho cac ky tu can dung (moi cot 1 byte, 5 cot/ky tu) */
+/**
+  * @brief Minimal 5x7 bitmap font glyph entry.
+  */
 typedef struct {
-    char ch;
-    uint8_t col[5];
+    char ch;        /**< ASCII character */
+    uint8_t col[5]; /**< 5 vertical column bitmasks (LSB = top pixel) */
 } Glyph5x7;
 
 static const Glyph5x7 s_font[] = {
@@ -195,7 +205,7 @@ static void put_2d(char *buf, uint8_t v)
 
 static const char *title_for_state(const AppData *d)
 {
-    if (d->ring) {
+    if (d->alarm_ringing) {
         return "ALARM!";
     }
     switch (d->state) {
@@ -212,7 +222,7 @@ static const char *title_for_state(const AppData *d)
 void ui_draw_frame(const AppData *d)
 {
     const char *title = title_for_state(d);
-    uint16_t bar_bg = d->ring ? UI_BAR_ALARM : UI_BAR_NORMAL;
+    uint16_t bar_bg = d->alarm_ringing ? UI_BAR_ALARM : UI_BAR_NORMAL;
     uint16_t len = (uint16_t)strlen(title);
     uint16_t tx = (len * 12U < LCD_W) ? (uint16_t)((LCD_W - len * 12U) / 2U) : 4U;
 
@@ -248,49 +258,49 @@ void ui_render(const AppData *d)
 
     /* Chon du lieu hien thi theo buoc */
     if (d->state == ST_SET_HOUR || d->state == ST_SET_MIN) {
-        disp_h = d->edit_h;
-        disp_m = d->edit_m;
+        disp_h = d->edit_hour;
+        disp_m = d->edit_minute;
         disp_s = 0U;
         time_fg = UI_FG_EDIT;
     } else if (d->state == ST_ALARM_HOUR || d->state == ST_ALARM_MIN) {
-        disp_h = d->edit_h;
-        disp_m = d->edit_m;
-        disp_s = d->sec;
+        disp_h = d->edit_hour;
+        disp_m = d->edit_minute;
+        disp_s = d->second;
         time_fg = UI_FG_EDIT;
     } else {
         disp_h = d->hour;
-        disp_m = d->min;
-        disp_s = d->sec;
+        disp_m = d->minute;
+        disp_s = d->second;
         time_fg = UI_FG_TIME;
     }
 
     if (d->state == ST_ALARM_HOUR || d->state == ST_ALARM_MIN || d->state == ST_ALARM_EN) {
-        disp_ah  = d->edit_h;
-        disp_am  = d->edit_m;
-        disp_aen = (d->state == ST_ALARM_EN) ? d->edit_en : d->aen;
+        disp_ah  = d->edit_hour;
+        disp_am  = d->edit_minute;
+        disp_aen = (d->state == ST_ALARM_EN) ? d->edit_alarm_enabled : d->alarm_enabled;
     } else {
-        disp_ah  = d->ah;
-        disp_am  = d->am;
-        disp_aen = d->aen;
+        disp_ah  = d->alarm_hour;
+        disp_am  = d->alarm_minute;
+        disp_aen = d->alarm_enabled;
     }
 
     /* Cap nhat chu so 7 doan neu thay doi */
-    if (force || (disp_h / 10U) != (s_cache.h / 10U)) {
+    if (force || (disp_h / 10U) != (s_cache.hour / 10U)) {
         draw_7seg(X_H1, BIG_Y, BIG_W, BIG_H, BIG_T, (uint8_t)(disp_h / 10U), time_fg, UI_BG);
     }
-    if (force || (disp_h % 10U) != (s_cache.h % 10U)) {
+    if (force || (disp_h % 10U) != (s_cache.hour % 10U)) {
         draw_7seg(X_H2, BIG_Y, BIG_W, BIG_H, BIG_T, (uint8_t)(disp_h % 10U), time_fg, UI_BG);
     }
-    if (force || (disp_m / 10U) != (s_cache.m / 10U)) {
+    if (force || (disp_m / 10U) != (s_cache.minute / 10U)) {
         draw_7seg(X_M1, BIG_Y, BIG_W, BIG_H, BIG_T, (uint8_t)(disp_m / 10U), time_fg, UI_BG);
     }
-    if (force || (disp_m % 10U) != (s_cache.m % 10U)) {
+    if (force || (disp_m % 10U) != (s_cache.minute % 10U)) {
         draw_7seg(X_M2, BIG_Y, BIG_W, BIG_H, BIG_T, (uint8_t)(disp_m % 10U), time_fg, UI_BG);
     }
-    if (force || (disp_s / 10U) != (s_cache.s / 10U)) {
+    if (force || (disp_s / 10U) != (s_cache.second / 10U)) {
         draw_7seg(X_S1, SEC_Y, SEC_W, SEC_H, SEC_T, (uint8_t)(disp_s / 10U), UI_FG_TIME, UI_BG);
     }
-    if (force || (disp_s % 10U) != (s_cache.s % 10U)) {
+    if (force || (disp_s % 10U) != (s_cache.second % 10U)) {
         draw_7seg(X_S2, SEC_Y, SEC_W, SEC_H, SEC_T, (uint8_t)(disp_s % 10U), UI_FG_TIME, UI_BG);
     }
 
@@ -304,7 +314,7 @@ void ui_render(const AppData *d)
     }
 
     /* Trang thai bao thuc: ALM HH:MM ON / OFF */
-    if (force || disp_ah != s_cache.ah || disp_am != s_cache.am || disp_aen != s_cache.aen) {
+    if (force || disp_ah != s_cache.alarm_hour || disp_am != s_cache.alarm_minute || disp_aen != s_cache.alarm_enabled) {
         char abuf[14] = "ALM 00:00 OFF";
         uint16_t afg = disp_aen ? UI_FG_ALM_ON : UI_FG_ALM_OFF;
         put_2d(&abuf[4], disp_ah);
@@ -318,15 +328,15 @@ void ui_render(const AppData *d)
     }
 
     s_cache.valid = 1U;
-    s_cache.h     = disp_h;
-    s_cache.m     = disp_m;
-    s_cache.s     = disp_s;
+    s_cache.hour     = disp_h;
+    s_cache.minute     = disp_m;
+    s_cache.second     = disp_s;
     s_cache.date  = d->date;
     s_cache.month = d->month;
     s_cache.year  = d->year;
-    s_cache.ah    = disp_ah;
-    s_cache.am    = disp_am;
-    s_cache.aen   = disp_aen;
+    s_cache.alarm_hour    = disp_ah;
+    s_cache.alarm_minute    = disp_am;
+    s_cache.alarm_enabled   = disp_aen;
     s_cache.state = d->state;
-    s_cache.ring  = d->ring;
+    s_cache.alarm_ringing  = d->alarm_ringing;
 }

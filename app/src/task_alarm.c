@@ -15,9 +15,12 @@
 #include "bsp.h"
 #include "task_alarm.h"
 
+/**
+  * @brief Single step in the alarm buzzer/LED cadence pattern.
+  */
 typedef struct {
-    uint8_t on;
-    uint8_t periods;
+    uint8_t on;      /**< 1 = buzzer and LED on, 0 = off */
+    uint8_t periods; /**< Duration in TASK_ALARM_PERIOD_MS ticks */
 } AlarmStep_t;
 
 /* Mỗi period tương ứng TASK_ALARM_PERIOD_MS, hiện tại là 250 ms. */
@@ -38,8 +41,8 @@ static void prvAlarmSetRingState(uint8_t ring)
     BaseType_t changed = pdFALSE;
 
     if (app_data_lock() == pdTRUE) {
-        if (g_app.ring != ring) {
-            g_app.ring = ring;
+        if (g_app.alarm_ringing != ring) {
+            g_app.alarm_ringing = ring;
             changed = pdTRUE;
         }
 
@@ -100,9 +103,9 @@ static void prvAlarmTask(void *pvParameters)
 
         alarm_matches =
             (snapshot.rtc_ok != 0U) &&
-            (snapshot.aen != 0U) &&
-            (snapshot.hour == snapshot.ah) &&
-            (snapshot.min == snapshot.am);
+            (snapshot.alarm_enabled != 0U) &&
+            (snapshot.hour == snapshot.alarm_hour) &&
+            (snapshot.minute == snapshot.alarm_minute);
 
         if (alarm_matches == 0U) {
             /* Qua phút báo thức: cho phép kích hoạt ở lần kế tiếp. */

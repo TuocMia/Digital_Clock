@@ -38,7 +38,7 @@ static void prvButtonTask(void *pvParameters)
 
                 /* Chi gui su kien khi phat hien canh nhan (0 -> 1) */
                 if (stable_state == 1U) {
-                    Evt e = { .type = EVT_BTN, .val = 0U };
+                    Evt e = { .type = EVT_BTN, .value = 0U };
                     (void)xQueueSend(xEvtQueue, &e, pdMS_TO_TICKS(Q_EVT_SEND_TIMEOUT_MS));
                 }
             }

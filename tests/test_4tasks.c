@@ -50,34 +50,34 @@ static void prvMockCtrlTask(void *pvParameters)
 
                 if (prev_state == ST_SET_MIN && time_dirty != 0U) {
                     RtcCmd cmd = {
-                        .cmd = CMD_SET_TIME,
-                        .h   = g_app.edit_h,
-                        .m   = g_app.edit_m,
-                        .en  = 0U
+                        .command = CMD_SET_TIME,
+                        .hour   = g_app.edit_hour,
+                        .minute   = g_app.edit_minute,
+                        .alarm_enabled  = 0U
                     };
                     (void)xQueueSend(xRtcQueue, &cmd, pdMS_TO_TICKS(Q_RTC_SEND_TIMEOUT_MS));
                     time_dirty = 0U;
                 } else if (prev_state == ST_ALARM_EN) {
                     RtcCmd cmd;
-                    g_app.ah  = g_app.edit_h;
-                    g_app.am  = g_app.edit_m;
-                    g_app.aen = g_app.edit_en;
-                    cmd.cmd = CMD_SET_ALARM;
-                    cmd.h   = g_app.ah;
-                    cmd.m   = g_app.am;
-                    cmd.en  = g_app.aen;
+                    g_app.alarm_hour  = g_app.edit_hour;
+                    g_app.alarm_minute  = g_app.edit_minute;
+                    g_app.alarm_enabled = g_app.edit_alarm_enabled;
+                    cmd.command = CMD_SET_ALARM;
+                    cmd.hour   = g_app.alarm_hour;
+                    cmd.minute   = g_app.alarm_minute;
+                    cmd.alarm_enabled  = g_app.alarm_enabled;
                     (void)xQueueSend(xRtcQueue, &cmd, pdMS_TO_TICKS(Q_RTC_SEND_TIMEOUT_MS));
                 }
 
                 g_app.state = next_state;
                 if (next_state == ST_SET_HOUR) {
-                    g_app.edit_h = g_app.hour;
-                    g_app.edit_m = g_app.min;
+                    g_app.edit_hour = g_app.hour;
+                    g_app.edit_minute = g_app.minute;
                     time_dirty   = 0U;
                 } else if (next_state == ST_ALARM_HOUR) {
-                    g_app.edit_h  = g_app.ah;
-                    g_app.edit_m  = g_app.am;
-                    g_app.edit_en = g_app.aen;
+                    g_app.edit_hour  = g_app.alarm_hour;
+                    g_app.edit_minute  = g_app.alarm_minute;
+                    g_app.edit_alarm_enabled = g_app.alarm_enabled;
                 }
                 app_data_unlock();
 
@@ -86,10 +86,10 @@ static void prvMockCtrlTask(void *pvParameters)
                 xEventGroupSetBits(xEventGroup, EV_REDRAW);
             }
         } else if (e.type == EVT_POT) {
-            last_pot = e.val;
+            last_pot = e.value;
 
             if (pot_armed == 0U) {
-                uint16_t diff = (e.val >= arm_ref) ? (e.val - arm_ref) : (arm_ref - e.val);
+                uint16_t diff = (e.value >= arm_ref) ? (e.value - arm_ref) : (arm_ref - e.value);
                 if (diff < POT_ARM_DELTA) {
                     continue;
                 }
@@ -99,17 +99,17 @@ static void prvMockCtrlTask(void *pvParameters)
             if (app_data_lock() == pdTRUE) {
                 uint8_t st = g_app.state;
                 if (st == ST_SET_HOUR) {
-                    g_app.edit_h = map_pot(e.val, 23U);
+                    g_app.edit_hour = map_pot(e.value, 23U);
                     time_dirty   = 1U;
                 } else if (st == ST_SET_MIN) {
-                    g_app.edit_m = map_pot(e.val, 59U);
+                    g_app.edit_minute = map_pot(e.value, 59U);
                     time_dirty   = 1U;
                 } else if (st == ST_ALARM_HOUR) {
-                    g_app.edit_h = map_pot(e.val, 23U);
+                    g_app.edit_hour = map_pot(e.value, 23U);
                 } else if (st == ST_ALARM_MIN) {
-                    g_app.edit_m = map_pot(e.val, 59U);
+                    g_app.edit_minute = map_pot(e.value, 59U);
                 } else if (st == ST_ALARM_EN) {
-                    g_app.edit_en = (e.val >= POT_ONOFF_THRESHOLD) ? 1U : 0U;
+                    g_app.edit_alarm_enabled = (e.value >= POT_ONOFF_THRESHOLD) ? 1U : 0U;
                 }
                 app_data_unlock();
 

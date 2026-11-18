@@ -11,18 +11,20 @@
 #include "hal_spi.h"
 #include "stdlib.h"
 
-/* LCD parameter structure */
+/**
+  * @brief ST7789 LCD controller runtime parameters.
+  */
 typedef struct
 {
-    u16 width;
-    u16 height;
-    u16 id;
-    u8  dir;
-    u16 wramcmd;
-    u16 setxcmd;
-    u16 setycmd;
-    u8  xoffset;
-    u8  yoffset;
+    u16 width;   /**< Active display width in pixels */
+    u16 height;  /**< Active display height in pixels */
+    u16 id;      /**< Controller ID */
+    u8  dir;     /**< Current scan direction (0..3) */
+    u16 wramcmd; /**< Memory write command (0x2C) */
+    u16 setxcmd; /**< Column address set command (0x2A) */
+    u16 setycmd; /**< Row address set command (0x2B) */
+    u8  xoffset; /**< Hardware X offset */
+    u8  yoffset; /**< Hardware Y offset */
 } _lcd_dev;
 
 extern _lcd_dev lcddev;

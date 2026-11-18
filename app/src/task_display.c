@@ -43,11 +43,11 @@ static void prvDisplayTask(void *pvParameters)
         snap = g_app;
         app_data_unlock();
 
-        if (first_draw || snap.state != prev_state || snap.ring != prev_ring) {
+        if (first_draw || snap.state != prev_state || snap.alarm_ringing != prev_ring) {
             ui_draw_frame(&snap);
             first_draw = 0U;
             prev_state = snap.state;
-            prev_ring  = snap.ring;
+            prev_ring  = snap.alarm_ringing;
         }
 
         ui_render(&snap);

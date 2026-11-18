@@ -32,8 +32,8 @@ static void rtc_publish_time(const hal_ds1302_datetime_t *datetime,
         return;
     }
 
-    if (g_app.sec != datetime->seconds ||
-        g_app.min != datetime->minutes ||
+    if (g_app.second != datetime->seconds ||
+        g_app.minute != datetime->minutes ||
         g_app.hour != datetime->hours ||
         g_app.date != datetime->date ||
         g_app.month != datetime->month ||
@@ -42,8 +42,8 @@ static void rtc_publish_time(const hal_ds1302_datetime_t *datetime,
         redraw = 1U;
     }
 
-    g_app.sec = datetime->seconds;
-    g_app.min = datetime->minutes;
+    g_app.second = datetime->seconds;
+    g_app.minute = datetime->minutes;
     g_app.hour = datetime->hours;
     g_app.date = datetime->date;
     g_app.month = datetime->month;
@@ -99,13 +99,13 @@ static void rtc_load_alarm_from_ram(void)
     }
 
     if (valid != 0U) {
-        g_app.ah = alarm_h;
-        g_app.am = alarm_m;
-        g_app.aen = alarm_en;
+        g_app.alarm_hour = alarm_h;
+        g_app.alarm_minute = alarm_m;
+        g_app.alarm_enabled = alarm_en;
     } else {
-        g_app.ah = 0U;
-        g_app.am = 0U;
-        g_app.aen = 0U;
+        g_app.alarm_hour = 0U;
+        g_app.alarm_minute = 0U;
+        g_app.alarm_enabled = 0U;
     }
 
     app_data_unlock();
@@ -116,7 +116,7 @@ static hal_ds1302_status_t rtc_store_alarm(const RtcCmd *command)
 {
     hal_ds1302_status_t status;
 
-    if (command->h >= 24U || command->m >= 60U || command->en > 1U) {
+    if (command->hour >= 24U || command->minute >= 60U || command->alarm_enabled > 1U) {
         return HAL_DS1302_INVALID_ARGUMENT;
     }
 
@@ -126,17 +126,17 @@ static hal_ds1302_status_t rtc_store_alarm(const RtcCmd *command)
         return status;
     }
 
-    status = hal_ds1302_write_ram(DS_RAM_ADDR_ALARM_H, command->h);
+    status = hal_ds1302_write_ram(DS_RAM_ADDR_ALARM_H, command->hour);
     if (status != HAL_DS1302_OK) {
         return status;
     }
 
-    status = hal_ds1302_write_ram(DS_RAM_ADDR_ALARM_M, command->m);
+    status = hal_ds1302_write_ram(DS_RAM_ADDR_ALARM_M, command->minute);
     if (status != HAL_DS1302_OK) {
         return status;
     }
 
-    status = hal_ds1302_write_ram(DS_RAM_ADDR_ALARM_EN, command->en);
+    status = hal_ds1302_write_ram(DS_RAM_ADDR_ALARM_EN, command->alarm_enabled);
     if (status != HAL_DS1302_OK) {
         return status;
     }
@@ -149,11 +149,11 @@ static void rtc_handle_command(const RtcCmd *command)
 {
     hal_ds1302_status_t status;
 
-    switch (command->cmd) {
+    switch (command->command) {
     case CMD_SET_TIME: {
         hal_ds1302_datetime_t datetime;
 
-        if (command->h >= 24U || command->m >= 60U) {
+        if (command->hour >= 24U || command->minute >= 60U) {
             rtc_publish_error();
             break;
         }
@@ -166,8 +166,8 @@ static void rtc_handle_command(const RtcCmd *command)
             break;
         }
 
-        datetime.hours = command->h;
-        datetime.minutes = command->m;
+        datetime.hours = command->hour;
+        datetime.minutes = command->minute;
         datetime.seconds = 0U;
 
         status = hal_ds1302_write_time(&datetime);

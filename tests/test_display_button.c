@@ -36,21 +36,21 @@ static void prvTestHarnessTask(void *pvParameters)
                 if (app_data_lock() == pdTRUE) {
                     if (step < ST_COUNT) {
                         g_app.state = step;
-                        g_app.ring  = 0U;
+                        g_app.alarm_ringing  = 0U;
                         if (step == ST_SET_HOUR || step == ST_SET_MIN) {
-                            g_app.edit_h = g_app.hour;
-                            g_app.edit_m = g_app.min;
+                            g_app.edit_hour = g_app.hour;
+                            g_app.edit_minute = g_app.minute;
                         } else if (step == ST_ALARM_HOUR || step == ST_ALARM_MIN) {
-                            g_app.edit_h = g_app.ah;
-                            g_app.edit_m = g_app.am;
+                            g_app.edit_hour = g_app.alarm_hour;
+                            g_app.edit_minute = g_app.alarm_minute;
                         } else if (step == ST_ALARM_EN) {
-                            g_app.edit_en = (uint8_t)(g_app.aen ^ 1U);
-                            g_app.aen = g_app.edit_en;
+                            g_app.edit_alarm_enabled = (uint8_t)(g_app.alarm_enabled ^ 1U);
+                            g_app.alarm_enabled = g_app.edit_alarm_enabled;
                         }
                     } else {
                         /* Step 6: test red ALARM! header banner */
                         g_app.state = ST_VIEW;
-                        g_app.ring  = 1U;
+                        g_app.alarm_ringing  = 1U;
                     }
                     app_data_unlock();
                 }
@@ -59,12 +59,12 @@ static void prvTestHarnessTask(void *pvParameters)
         } else {
             /* 1 s timeout: tick dummy seconds to verify 7-seg partial redraw */
             if (app_data_lock() == pdTRUE) {
-                g_app.sec++;
-                if (g_app.sec >= 60U) {
-                    g_app.sec = 0U;
-                    g_app.min++;
-                    if (g_app.min >= 60U) {
-                        g_app.min = 0U;
+                g_app.second++;
+                if (g_app.second >= 60U) {
+                    g_app.second = 0U;
+                    g_app.minute++;
+                    if (g_app.minute >= 60U) {
+                        g_app.minute = 0U;
                         g_app.hour = (uint8_t)((g_app.hour + 1U) % 24U);
                     }
                 }
@@ -88,16 +88,16 @@ int main(void)
 
     /* Seed dummy clock & alarm values for display test */
     g_app.hour  = 12U;
-    g_app.min   = 34U;
-    g_app.sec   = 50U;
+    g_app.minute   = 34U;
+    g_app.second   = 50U;
     g_app.date  = 14U;
     g_app.month = 11U;
     g_app.year  = 26U;
-    g_app.ah    = 7U;
-    g_app.am    = 30U;
-    g_app.aen   = 1U;
+    g_app.alarm_hour    = 7U;
+    g_app.alarm_minute    = 30U;
+    g_app.alarm_enabled   = 1U;
     g_app.state = ST_VIEW;
-    g_app.ring  = 0U;
+    g_app.alarm_ringing  = 0U;
 
     if (task_button_create() != pdPASS) {
         for (;;) {}

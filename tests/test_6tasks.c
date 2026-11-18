@@ -45,7 +45,7 @@ static void prvTestCtrlTask(void *pvParameters)
             uint8_t is_ringing = 0U;
 
             if (app_data_lock() == pdTRUE) {
-                is_ringing = g_app.ring;
+                is_ringing = g_app.alarm_ringing;
                 app_data_unlock();
             }
 
@@ -61,34 +61,34 @@ static void prvTestCtrlTask(void *pvParameters)
 
                 if (prev_state == ST_SET_MIN && time_dirty != 0U) {
                     RtcCmd cmd = {
-                        .cmd = CMD_SET_TIME,
-                        .h   = g_app.edit_h,
-                        .m   = g_app.edit_m,
-                        .en  = 0U
+                        .command = CMD_SET_TIME,
+                        .hour   = g_app.edit_hour,
+                        .minute   = g_app.edit_minute,
+                        .alarm_enabled  = 0U
                     };
                     (void)xQueueSend(xRtcQueue, &cmd, pdMS_TO_TICKS(Q_RTC_SEND_TIMEOUT_MS));
                     time_dirty = 0U;
                 } else if (prev_state == ST_ALARM_EN) {
                     RtcCmd cmd;
-                    g_app.ah  = g_app.edit_h;
-                    g_app.am  = g_app.edit_m;
-                    g_app.aen = g_app.edit_en;
-                    cmd.cmd = CMD_SET_ALARM;
-                    cmd.h   = g_app.ah;
-                    cmd.m   = g_app.am;
-                    cmd.en  = g_app.aen;
+                    g_app.alarm_hour  = g_app.edit_hour;
+                    g_app.alarm_minute  = g_app.edit_minute;
+                    g_app.alarm_enabled = g_app.edit_alarm_enabled;
+                    cmd.command = CMD_SET_ALARM;
+                    cmd.hour   = g_app.alarm_hour;
+                    cmd.minute   = g_app.alarm_minute;
+                    cmd.alarm_enabled  = g_app.alarm_enabled;
                     (void)xQueueSend(xRtcQueue, &cmd, pdMS_TO_TICKS(Q_RTC_SEND_TIMEOUT_MS));
                 }
 
                 g_app.state = next_state;
                 if (next_state == ST_SET_HOUR) {
-                    g_app.edit_h = g_app.hour;
-                    g_app.edit_m = g_app.min;
+                    g_app.edit_hour = g_app.hour;
+                    g_app.edit_minute = g_app.minute;
                     time_dirty   = 0U;
                 } else if (next_state == ST_ALARM_HOUR) {
-                    g_app.edit_h  = g_app.ah;
-                    g_app.edit_m  = g_app.am;
-                    g_app.edit_en = g_app.aen;
+                    g_app.edit_hour  = g_app.alarm_hour;
+                    g_app.edit_minute  = g_app.alarm_minute;
+                    g_app.edit_alarm_enabled = g_app.alarm_enabled;
                 }
                 app_data_unlock();
 
@@ -97,10 +97,10 @@ static void prvTestCtrlTask(void *pvParameters)
                 xEventGroupSetBits(xEventGroup, EV_REDRAW);
             }
         } else if (e.type == EVT_POT) {
-            last_pot = e.val;
+            last_pot = e.value;
 
             if (pot_armed == 0U) {
-                uint16_t diff = (e.val >= arm_ref) ? (e.val - arm_ref) : (arm_ref - e.val);
+                uint16_t diff = (e.value >= arm_ref) ? (e.value - arm_ref) : (arm_ref - e.value);
                 if (diff < POT_ARM_DELTA) {
                     continue;
                 }
@@ -110,17 +110,17 @@ static void prvTestCtrlTask(void *pvParameters)
             if (app_data_lock() == pdTRUE) {
                 uint8_t st = g_app.state;
                 uint8_t changed = 0U;
-                int32_t delta = (int32_t)e.val - (int32_t)arm_ref;
+                int32_t delta = (int32_t)e.value - (int32_t)arm_ref;
 
                 if (st == ST_SET_HOUR || st == ST_ALARM_HOUR) {
                     while (delta >= POT_STEP_HOUR) {
-                        g_app.edit_h = step_wrap(g_app.edit_h, 1, 23U);
+                        g_app.edit_hour = step_wrap(g_app.edit_hour, 1, 23U);
                         arm_ref = (uint16_t)(arm_ref + POT_STEP_HOUR);
                         delta -= POT_STEP_HOUR;
                         changed = 1U;
                     }
                     while (delta <= -POT_STEP_HOUR) {
-                        g_app.edit_h = step_wrap(g_app.edit_h, -1, 23U);
+                        g_app.edit_hour = step_wrap(g_app.edit_hour, -1, 23U);
                         arm_ref = (uint16_t)(arm_ref - POT_STEP_HOUR);
                         delta += POT_STEP_HOUR;
                         changed = 1U;
@@ -130,13 +130,13 @@ static void prvTestCtrlTask(void *pvParameters)
                     }
                 } else if (st == ST_SET_MIN || st == ST_ALARM_MIN) {
                     while (delta >= POT_STEP_MIN) {
-                        g_app.edit_m = step_wrap(g_app.edit_m, 1, 59U);
+                        g_app.edit_minute = step_wrap(g_app.edit_minute, 1, 59U);
                         arm_ref = (uint16_t)(arm_ref + POT_STEP_MIN);
                         delta -= POT_STEP_MIN;
                         changed = 1U;
                     }
                     while (delta <= -POT_STEP_MIN) {
-                        g_app.edit_m = step_wrap(g_app.edit_m, -1, 59U);
+                        g_app.edit_minute = step_wrap(g_app.edit_minute, -1, 59U);
                         arm_ref = (uint16_t)(arm_ref - POT_STEP_MIN);
                         delta += POT_STEP_MIN;
                         changed = 1U;
@@ -145,9 +145,9 @@ static void prvTestCtrlTask(void *pvParameters)
                         time_dirty = 1U;
                     }
                 } else if (st == ST_ALARM_EN) {
-                    uint8_t en = (e.val >= POT_ONOFF_THRESHOLD) ? 1U : 0U;
-                    if (en != g_app.edit_en) {
-                        g_app.edit_en = en;
+                    uint8_t en = (e.value >= POT_ONOFF_THRESHOLD) ? 1U : 0U;
+                    if (en != g_app.edit_alarm_enabled) {
+                        g_app.edit_alarm_enabled = en;
                         changed = 1U;
                     }
                 }
