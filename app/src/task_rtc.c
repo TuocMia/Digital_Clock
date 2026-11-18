@@ -158,17 +158,53 @@ static void rtc_handle_command(const RtcCmd *command)
             break;
         }
 
-        /* Read first to preserve the current date and weekday. */
+        /* Read first to preserve the current date and weekday; fallback if RTC uninitialized. */
         status = hal_ds1302_read_time(&datetime);
         if (status != HAL_DS1302_OK &&
             status != HAL_DS1302_CLOCK_STOPPED) {
-            rtc_publish_error();
-            break;
+            datetime.date    = 18U;
+            datetime.month   = 11U;
+            datetime.year    = 26U;
+            datetime.weekday = 1U;
         }
 
         datetime.hours = command->hour;
         datetime.minutes = command->minute;
         datetime.seconds = 0U;
+
+        status = hal_ds1302_write_time(&datetime);
+        if (status != HAL_DS1302_OK) {
+            rtc_publish_error();
+            break;
+        }
+
+        xEventGroupSetBits(xEventGroup, EV_REDRAW);
+        break;
+    }
+
+    case CMD_SET_DATE: {
+        hal_ds1302_datetime_t datetime;
+
+        if (command->date < 1U || command->date > 31U ||
+            command->month < 1U || command->month > 12U ||
+            command->year > 99U) {
+            rtc_publish_error();
+            break;
+        }
+
+        /* Read first to preserve current hours, minutes, and seconds. */
+        status = hal_ds1302_read_time(&datetime);
+        if (status != HAL_DS1302_OK &&
+            status != HAL_DS1302_CLOCK_STOPPED) {
+            datetime.hours   = 0U;
+            datetime.minutes = 0U;
+            datetime.seconds = 0U;
+            datetime.weekday = 1U;
+        }
+
+        datetime.date  = command->date;
+        datetime.month = command->month;
+        datetime.year  = command->year;
 
         status = hal_ds1302_write_time(&datetime);
         if (status != HAL_DS1302_OK) {

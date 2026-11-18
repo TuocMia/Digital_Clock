@@ -1,7 +1,7 @@
 # Digital Clock Project
 
 ## Overview
-A STM32F103-based digital clock running **FreeRTOS** that drives an **ST7789 240x240 SPI LCD**, reads/writes **DS1302 RTC** (including 31-byte battery-backed RAM for alarm storage), handles a **button (PA0)**, and a **potentiometer (PA3)** to adjust time and alarm settings.
+A STM32F103-based digital clock running **FreeRTOS** that drives an **ST7789 240x240 SPI LCD**, reads/writes **DS1302 RTC** (including 31-byte battery-backed RAM for alarm storage), displays the **Vietnamese Lunar Calendar (2000-2050)**, and uses a **button (PA0)** plus a **potentiometer (PA3)** to adjust time, date/month/year, and alarm settings (`S0..S8`).
 
 ## Hardware Pin Map
 | Function | Port | Pin | Note |

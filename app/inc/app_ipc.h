@@ -22,9 +22,12 @@ typedef enum {
     ST_VIEW = 0,   /**< S0: Normal clock display mode */
     ST_SET_HOUR,   /**< S1: Adjust current hour (0..23) */
     ST_SET_MIN,    /**< S2: Adjust current minute (0..59), writes DS1302 on exit */
-    ST_ALARM_HOUR, /**< S3: Adjust alarm hour (0..23) */
-    ST_ALARM_MIN,  /**< S4: Adjust alarm minute (0..59) */
-    ST_ALARM_EN,   /**< S5: Enable/disable alarm, writes DS1302 RAM on exit */
+    ST_SET_DATE,   /**< S3: Adjust current day of month (1..31) */
+    ST_SET_MONTH,  /**< S4: Adjust current month (1..12) */
+    ST_SET_YEAR,   /**< S5: Adjust current year (0..99 -> 2000..2099), writes DS1302 on exit */
+    ST_ALARM_HOUR, /**< S6: Adjust alarm hour (0..23) */
+    ST_ALARM_MIN,  /**< S7: Adjust alarm minute (0..59) */
+    ST_ALARM_EN,   /**< S8: Enable/disable alarm, writes DS1302 RAM on exit */
     ST_COUNT       /**< Total number of states */
 } app_state_t;
 
@@ -49,6 +52,7 @@ typedef struct {
   */
 typedef enum {
     CMD_SET_TIME = 0, /**< Write hours and minutes to DS1302 (seconds reset to 0) */
+    CMD_SET_DATE,     /**< Write date, month, and year to DS1302 (keeps current time) */
     CMD_SET_ALARM     /**< Persist alarm hour, minute, and enable flag to DS1302 RAM */
 } rtc_cmd_t;
 
@@ -59,6 +63,9 @@ typedef struct {
     uint8_t command;       /**< Command type (rtc_cmd_t) */
     uint8_t hour;          /**< Target hour (0..23) */
     uint8_t minute;        /**< Target minute (0..59) */
+    uint8_t date;          /**< Target day of month (1..31) for CMD_SET_DATE */
+    uint8_t month;         /**< Target month (1..12) for CMD_SET_DATE */
+    uint8_t year;          /**< Target year (0..99) for CMD_SET_DATE */
     uint8_t alarm_enabled; /**< Alarm enable flag for CMD_SET_ALARM (1 = enabled, 0 = disabled) */
 } RtcCmd;
 
@@ -75,9 +82,12 @@ typedef struct {
     uint8_t year;               /**< Year 0..99 representing 2000..2099 (written by T_RTC) */
     uint8_t rtc_ok;             /**< 1 if last DS1302 read succeeded, 0 on error (written by T_RTC) */
     uint8_t state;              /**< Current state machine step app_state_t (written by T_Ctrl) */
-    uint8_t edit_hour;          /**< Temporary hour being edited in S1..S4 (written by T_Ctrl) */
-    uint8_t edit_minute;        /**< Temporary minute being edited in S1..S4 (written by T_Ctrl) */
-    uint8_t edit_alarm_enabled; /**< Temporary alarm enable flag in S5 (written by T_Ctrl) */
+    uint8_t edit_hour;          /**< Temporary hour being edited (written by T_Ctrl) */
+    uint8_t edit_minute;        /**< Temporary minute being edited (written by T_Ctrl) */
+    uint8_t edit_date;          /**< Temporary day of month being edited (written by T_Ctrl) */
+    uint8_t edit_month;         /**< Temporary month being edited (written by T_Ctrl) */
+    uint8_t edit_year;          /**< Temporary year being edited (written by T_Ctrl) */
+    uint8_t edit_alarm_enabled; /**< Temporary alarm enable flag (written by T_Ctrl) */
     uint8_t alarm_hour;         /**< Active alarm hour 0..23 (written by T_Ctrl; loaded at boot by T_RTC) */
     uint8_t alarm_minute;       /**< Active alarm minute 0..59 (written by T_Ctrl; loaded at boot by T_RTC) */
     uint8_t alarm_enabled;      /**< Active alarm enable flag (written by T_Ctrl; loaded at boot by T_RTC) */

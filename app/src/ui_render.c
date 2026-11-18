@@ -33,10 +33,11 @@
 #define SEC_T           4U
 #define UNDER_Y         128U
 #define UNDER_H         3U
-#define DATE_Y          150U
-#define DIV_Y           180U
-#define ALM_Y           196U
-#define ALM_UNDER_Y     214U
+#define DATE_Y          138U
+#define LUNAR_Y         162U
+#define DIV_Y           188U
+#define ALM_Y           200U
+#define ALM_UNDER_Y     218U
 
 /* Vi tri X cac chu so */
 #define X_H1            14U
@@ -93,6 +94,7 @@ typedef struct {
 static const Glyph5x7 s_font[] = {
     {' ', {0x00, 0x00, 0x00, 0x00, 0x00}},
     {'!', {0x00, 0x00, 0x5F, 0x00, 0x00}},
+    {'-', {0x08, 0x08, 0x08, 0x08, 0x08}},
     {'/', {0x20, 0x10, 0x08, 0x04, 0x02}},
     {':', {0x00, 0x36, 0x36, 0x00, 0x00}},
     {'0', {0x3E, 0x51, 0x49, 0x45, 0x3E}},
@@ -125,7 +127,8 @@ static const Glyph5x7 s_font[] = {
     {'T', {0x01, 0x01, 0x7F, 0x01, 0x01}},
     {'U', {0x3F, 0x40, 0x40, 0x40, 0x3F}},
     {'V', {0x1F, 0x20, 0x40, 0x20, 0x1F}},
-    {'W', {0x3F, 0x40, 0x38, 0x40, 0x3F}}
+    {'W', {0x3F, 0x40, 0x38, 0x40, 0x3F}},
+    {'Y', {0x07, 0x08, 0x70, 0x08, 0x07}}
 };
 
 static void lcd_fill_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
@@ -203,6 +206,77 @@ static void put_2d(char *buf, uint8_t v)
     buf[1] = (char)('0' + (v % 10U));
 }
 
+/* Packed Vietnamese lunar year table (1999..2050, UTC+7):
+ * bits 0..3 = leap month, bits 4..16 = 30-day mask, bits 17..22 = Tet offset from Jan 1. */
+static const uint32_t s_lunar_table[52] = {
+    0x5C7490UL, 0x466930UL, 0x2F52B4UL, 0x5452B0UL, 0x3EA5B0UL, 0x2B55A2UL,
+    0x4E56A0UL, 0x38B657UL, 0x5EBA50UL, 0x4AB490UL, 0x33A955UL, 0x58A950UL,
+    0x4252D0UL, 0x2CAAD4UL, 0x50AB50UL, 0x3D5AA9UL, 0x626D20UL, 0x4CDA50UL,
+    0x37D4A6UL, 0x5CE4A0UL, 0x46C960UL, 0x319364UL, 0x545560UL, 0x3EAB50UL,
+    0x2B5B41UL, 0x506D20UL, 0x38EA56UL, 0x5E7450UL, 0x4864B0UL, 0x32C975UL,
+    0x564AB0UL, 0x4055B0UL, 0x2CAD63UL, 0x52B6A0UL, 0x3D752BUL, 0x62B920UL,
+    0x4CB450UL, 0x37A4B6UL, 0x5AA4D0UL, 0x444AD0UL, 0x2E96B4UL, 0x545AD0UL,
+    0x3EBAA0UL, 0x2BB522UL, 0x50D920UL, 0x3BD457UL, 0x5ED260UL, 0x48A550UL,
+    0x334AD5UL, 0x584B60UL, 0x406B50UL, 0x2CDAA3UL
+};
+
+static int32_t jd_from_date(uint8_t dd, uint8_t mm, uint16_t yy)
+{
+    int32_t a = (14 - (int32_t)mm) / 12;
+    int32_t y = (int32_t)yy + 4800 - a;
+    int32_t m = (int32_t)mm + 12 * a - 3;
+    return (int32_t)dd + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
+}
+
+static uint8_t solar_to_lunar(uint8_t dd, uint8_t mm, uint16_t yy,
+                              uint8_t *l_day, uint8_t *l_month, uint8_t *l_leap)
+{
+    int32_t jd, tet_jd, offset;
+    uint16_t ly;
+    uint32_t entry;
+    uint8_t leap_m, n_months, idx, lm, is_leap;
+    uint16_t mask;
+
+    if (dd < 1U || dd > 31U || mm < 1U || mm > 12U || yy < 2000U || yy > 2050U) {
+        return 0U;
+    }
+
+    jd = jd_from_date(dd, mm, yy);
+    ly = yy;
+    tet_jd = jd_from_date(1U, 1U, ly) + (int32_t)(s_lunar_table[ly - 1999U] >> 17U);
+    if (jd < tet_jd) {
+        ly--;
+        tet_jd = jd_from_date(1U, 1U, ly) + (int32_t)(s_lunar_table[ly - 1999U] >> 17U);
+    }
+
+    offset = jd - tet_jd;
+    entry = s_lunar_table[ly - 1999U];
+    leap_m = (uint8_t)(entry & 0x0FU);
+    mask = (uint16_t)((entry >> 4U) & 0x1FFFU);
+    n_months = (leap_m != 0U) ? 13U : 12U;
+    lm = 1U;
+    is_leap = 0U;
+
+    for (idx = 0U; idx < n_months; idx++) {
+        int32_t days = (mask & (1U << idx)) ? 30 : 29;
+        if (offset < days) {
+            *l_day = (uint8_t)(offset + 1);
+            *l_month = lm;
+            *l_leap = is_leap;
+            return 1U;
+        }
+        offset -= days;
+        if (leap_m != 0U && lm == leap_m && is_leap == 0U) {
+            is_leap = 1U;
+        } else {
+            is_leap = 0U;
+            lm++;
+        }
+    }
+
+    return 0U;
+}
+
 static const char *title_for_state(const AppData *d)
 {
     if (d->alarm_ringing) {
@@ -212,6 +286,9 @@ static const char *title_for_state(const AppData *d)
         case ST_VIEW:       return "DIGITAL CLOCK";
         case ST_SET_HOUR:   return "SET HOUR";
         case ST_SET_MIN:    return "SET MIN";
+        case ST_SET_DATE:   return "SET DATE";
+        case ST_SET_MONTH:  return "SET MONTH";
+        case ST_SET_YEAR:   return "SET YEAR";
         case ST_ALARM_HOUR: return "ALARM HOUR";
         case ST_ALARM_MIN:  return "ALARM MIN";
         case ST_ALARM_EN:   return "ALARM ON/OFF";
@@ -244,6 +321,12 @@ void ui_draw_frame(const AppData *d)
         lcd_fill_rect(X_H1, UNDER_Y, (uint16_t)(X_H2 + BIG_W - X_H1), UNDER_H, UI_FG_EDIT);
     } else if (d->state == ST_SET_MIN || d->state == ST_ALARM_MIN) {
         lcd_fill_rect(X_M1, UNDER_Y, (uint16_t)(X_M2 + BIG_W - X_M1), UNDER_H, UI_FG_EDIT);
+    } else if (d->state == ST_SET_DATE) {
+        lcd_fill_rect(60U, (uint16_t)(DATE_Y + 16U), 22U, UNDER_H, UI_FG_EDIT);
+    } else if (d->state == ST_SET_MONTH) {
+        lcd_fill_rect(96U, (uint16_t)(DATE_Y + 16U), 22U, UNDER_H, UI_FG_EDIT);
+    } else if (d->state == ST_SET_YEAR) {
+        lcd_fill_rect(132U, (uint16_t)(DATE_Y + 16U), 46U, UNDER_H, UI_FG_EDIT);
     } else if (d->state == ST_ALARM_EN) {
         lcd_fill_rect(162U, ALM_UNDER_Y, 34U, UNDER_H, UI_FG_EDIT);
     }
@@ -305,12 +388,39 @@ void ui_render(const AppData *d)
     }
 
     /* Ngay DD/MM/20YY */
-    if (force || d->date != s_cache.date || d->month != s_cache.month || d->year != s_cache.year) {
-        char dbuf[11] = "00/00/2000";
-        put_2d(&dbuf[0], d->date);
-        put_2d(&dbuf[3], d->month);
-        put_2d(&dbuf[8], d->year);
-        draw_text(60U, DATE_Y, dbuf, UI_FG_DATE, UI_BG, 2U);
+    {
+        uint8_t is_date_edit = (d->state == ST_SET_DATE ||
+                                d->state == ST_SET_MONTH ||
+                                d->state == ST_SET_YEAR);
+        uint8_t disp_date  = is_date_edit ? d->edit_date  : d->date;
+        uint8_t disp_month = is_date_edit ? d->edit_month : d->month;
+        uint8_t disp_year  = is_date_edit ? d->edit_year  : d->year;
+        uint16_t date_fg   = is_date_edit ? UI_FG_EDIT    : UI_FG_DATE;
+
+        if (force || disp_date != s_cache.date || disp_month != s_cache.month || disp_year != s_cache.year) {
+            char dbuf[11] = "00/00/2000";
+            char lbuf[12] = "AL --/--   ";
+            uint8_t ld = 0U, lm = 0U, ll = 0U;
+
+            put_2d(&dbuf[0], disp_date);
+            put_2d(&dbuf[3], disp_month);
+            put_2d(&dbuf[8], disp_year);
+            draw_text(60U, DATE_Y, dbuf, date_fg, UI_BG, 2U);
+
+            if (solar_to_lunar(disp_date, disp_month, (uint16_t)(2000U + disp_year), &ld, &lm, &ll) != 0U) {
+                put_2d(&lbuf[3], ld);
+                put_2d(&lbuf[6], lm);
+                if (ll != 0U) {
+                    lbuf[9]  = 'N';
+                    lbuf[10] = 'H';
+                }
+            }
+            draw_text(60U, LUNAR_Y, lbuf, UI_FG_TIME, UI_BG, 2U);
+        }
+
+        s_cache.date  = disp_date;
+        s_cache.month = disp_month;
+        s_cache.year  = disp_year;
     }
 
     /* Trang thai bao thuc: ALM HH:MM ON / OFF */
@@ -331,9 +441,6 @@ void ui_render(const AppData *d)
     s_cache.hour     = disp_h;
     s_cache.minute     = disp_m;
     s_cache.second     = disp_s;
-    s_cache.date  = d->date;
-    s_cache.month = d->month;
-    s_cache.year  = d->year;
     s_cache.alarm_hour    = disp_ah;
     s_cache.alarm_minute    = disp_am;
     s_cache.alarm_enabled   = disp_aen;
