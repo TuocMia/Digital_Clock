@@ -1,13 +1,16 @@
+/*
+  * @file    hal_spi.c
+  * @brief   SPI2 Hardware Abstraction Layer implementation for ST7789 LCD.
+  */
+
 #include "hal_spi.h"
 
-/*****************************************************************************
- * @name       :u8 SPI_WriteByte(SPI_TypeDef* SPIx, u8 Byte)
- * @date       :2018-08-09
- * @function   :Write and receive one byte using STM32 hardware SPI
- * @parameters :SPIx: SPI peripheral (SPI1, SPI2, SPI3)
- *              Byte: Data to be transmitted
- * @retvalue   :Data received from the SPI bus
- ******************************************************************************/
+/*
+  * @brief  Write and receive one byte using STM32 hardware SPI
+  * @param  SPIx: SPI peripheral (SPI1, SPI2, SPI3)
+  * @param  Byte: Data to be transmitted
+  * @retval Data received from the SPI bus
+  */
 u8 SPI_WriteByte(SPI_TypeDef *SPIx, u8 Byte)
 {
     /* Wait for TX buffer empty */
@@ -23,38 +26,30 @@ u8 SPI_WriteByte(SPI_TypeDef *SPIx, u8 Byte)
     return (u8)SPI_I2S_ReceiveData(SPIx);
 }
 
-/*****************************************************************************
- * @name       :void SPI_SetSpeed(SPI_TypeDef* SPIx, u8 SpeedSet)
- * @date       :2018-08-09
- * @function   :Set hardware SPI communication speed
- * @parameters :SPIx: SPI peripheral (SPI1, SPI2, SPI3)
- *              SpeedSet: 0 - low speed
- *                        1 - high speed
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Set hardware SPI communication speed
+  * @param  SPIx: SPI peripheral (SPI1, SPI2, SPI3)
+  * @param  SpeedSet: 0 - low speed
+  *         1 - high speed
+  * @retval None
+  */
 void SPI_SetSpeed(SPI_TypeDef *SPIx, u8 SpeedSet)
 {
     /* Disable SPI before changing speed */
     SPI_Cmd(SPIx, DISABLE);
 
     /* Set SPI baud rate prescaler */
-    if (SpeedSet == 1) {
-        SPI_BaudRatePrescalerConfig(SPIx, SPI_BaudRatePrescaler_2);
-    } else {
-        SPI_BaudRatePrescalerConfig(SPIx, SPI_BaudRatePrescaler_32);
-    }
+    SPIx->CR1 = (uint16_t)((SPIx->CR1 & (uint16_t)~SPI_CR1_BR) |
+                ((SpeedSet == 1U) ? SPI_BaudRatePrescaler_2 : SPI_BaudRatePrescaler_32));
 
     /* Enable SPI peripheral */
     SPI_Cmd(SPIx, ENABLE);
 }
 
-/*****************************************************************************
- * @name       :void SPI2_Init(void)
- * @date       :2018-08-09
- * @function   :Initialize the STM32 hardware SPI2
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Initialize the STM32 hardware SPI2
+  * @retval None
+  */
 void SPI2_Init(void)
 {
     SPI_InitTypeDef SPI_InitStructure;

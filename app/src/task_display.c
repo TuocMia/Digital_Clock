@@ -1,3 +1,11 @@
+/**
+  ******************************************************************************
+  * @file    task_display.c
+  * @author  Digital Clock Team (HTNN-N15)
+  * @brief   ST7789 LCD rendering FreeRTOS task.
+  ******************************************************************************
+  */
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "event_groups.h"

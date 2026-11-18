@@ -1,3 +1,11 @@
+/**
+  ******************************************************************************
+  * @file    task_button.c
+  * @author  Digital Clock Team (HTNN-N15)
+  * @brief   Button scanning and 30 ms debounce FreeRTOS task.
+  ******************************************************************************
+  */
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"

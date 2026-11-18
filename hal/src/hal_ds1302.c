@@ -1,3 +1,8 @@
+/*
+  * @file    hal_ds1302.c
+  * @brief   DS1302 3-wire RTC and 31-byte RAM driver implementation.
+  */
+
 #include "hal_ds1302.h"
 #include "hal_gpio.h"
 #include "stm32f10x_conf.h"
@@ -14,12 +19,10 @@
 #define DS1302_HOUR_PM          0x20U
 #define DS1302_DELAY_LOOPS      18U
 
-/*****************************************************************************
- * @name       :static void ds1302_delay(void)
- * @function   :Provide a short setup/hold delay for bit-banged communication
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Provide a short setup/hold delay for bit-banged communication
+  * @retval None
+  */
 static void ds1302_delay(void)
 {
     volatile uint32_t i;
@@ -28,34 +31,29 @@ static void ds1302_delay(void)
     }
 }
 
-/*****************************************************************************
- * @name       :static void ds1302_write_mode(void)
- * @function   :Configure the shared DS1302 IO pin as output
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Configure the shared DS1302 IO pin as output
+  * @retval None
+  */
 static void ds1302_write_mode(void)
 {
     hal_gpio_init(HAL_DS1302_IO_PORT, HAL_DS1302_IO_PIN, HAL_GPIO_OUT_PP);
 }
 
-/*****************************************************************************
- * @name       :static void ds1302_read_mode(void)
- * @function   :Configure the shared DS1302 IO pin as pulled-up input
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Configure the shared DS1302 IO pin as pulled-up input
+  * @retval None
+  */
 static void ds1302_read_mode(void)
 {
     hal_gpio_init(HAL_DS1302_IO_PORT, HAL_DS1302_IO_PIN, HAL_GPIO_IN_PU);
 }
 
-/*****************************************************************************
- * @name       :static void ds1302_write_byte(uint8_t value)
- * @function   :Send one byte, least-significant bit first
- * @parameters :value: Byte to send
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Send one byte, least-significant bit first
+  * @param  value: Byte to send
+  * @retval None
+  */
 static void ds1302_write_byte(uint8_t value)
 {
     uint8_t bit;
@@ -74,12 +72,10 @@ static void ds1302_write_byte(uint8_t value)
     }
 }
 
-/*****************************************************************************
- * @name       :static void ds1302_begin(void)
- * @function   :Start a DS1302 transaction by asserting CE
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Start a DS1302 transaction by asserting CE
+  * @retval None
+  */
 static void ds1302_begin(void)
 {
     hal_gpio_clear(HAL_DS1302_SCLK_PORT, HAL_DS1302_SCLK_PIN);
@@ -87,12 +83,10 @@ static void ds1302_begin(void)
     ds1302_delay();
 }
 
-/*****************************************************************************
- * @name       :static void ds1302_end(void)
- * @function   :End a DS1302 transaction by deasserting CE
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  End a DS1302 transaction by deasserting CE
+  * @retval None
+  */
 static void ds1302_end(void)
 {
     hal_gpio_clear(HAL_DS1302_SCLK_PORT, HAL_DS1302_SCLK_PIN);
@@ -100,12 +94,10 @@ static void ds1302_end(void)
     hal_gpio_clear(HAL_DS1302_CE_PORT, HAL_DS1302_CE_PIN);
 }
 
-/*****************************************************************************
- * @name       :static uint8_t ds1302_read_byte(void)
- * @function   :Read one byte, least-significant bit first
- * @parameters :None
- * @retvalue   :Byte received from DS1302
- ******************************************************************************/
+/*
+  * @brief  Read one byte, least-significant bit first
+  * @retval Byte received from DS1302
+  */
 static uint8_t ds1302_read_byte(void)
 {
     uint8_t bit;
@@ -124,34 +116,31 @@ static uint8_t ds1302_read_byte(void)
     return value;
 }
 
-/*****************************************************************************
- * @name       :static uint8_t bcd_to_binary(uint8_t value)
- * @function   :Convert a packed BCD value to a binary integer
- * @parameters :value: Packed BCD value
- * @retvalue   :Converted integer
- ******************************************************************************/
+/*
+  * @brief  Convert a packed BCD value to a binary integer
+  * @param  value: Packed BCD value
+  * @retval Converted integer
+  */
 static uint8_t bcd_to_binary(uint8_t value)
 {
     return (uint8_t)(((value >> 4) * 10U) + (value & 0x0FU));
 }
 
-/*****************************************************************************
- * @name       :static uint8_t binary_to_bcd(uint8_t value)
- * @function   :Convert a binary integer to packed BCD
- * @parameters :value: Binary integer
- * @retvalue   :Packed BCD value
- ******************************************************************************/
+/*
+  * @brief  Convert a binary integer to packed BCD
+  * @param  value: Binary integer
+  * @retval Packed BCD value
+  */
 static uint8_t binary_to_bcd(uint8_t value)
 {
     return (uint8_t)(((value / 10U) << 4) | (value % 10U));
 }
 
-/*****************************************************************************
- * @name       :static uint8_t valid_bcd(uint8_t value, uint8_t max_value)
- * @function   :Check BCD digits and the permitted maximum value
- * @parameters :value: Packed BCD value; max_value: Maximum decoded value
- * @retvalue   :1 when valid, otherwise 0
- ******************************************************************************/
+/*
+  * @brief  Check BCD digits and the permitted maximum value
+  * @param  value: Packed BCD value; max_value: Maximum decoded value
+  * @retval 1 when valid, otherwise 0
+  */
 static uint8_t valid_bcd(uint8_t value, uint8_t max_value)
 {
     uint8_t low = value & 0x0FU;
@@ -159,12 +148,11 @@ static uint8_t valid_bcd(uint8_t value, uint8_t max_value)
     return (low <= 9U && high <= 9U && bcd_to_binary(value) <= max_value) ? 1U : 0U;
 }
 
-/*****************************************************************************
- * @name       :static uint8_t valid_datetime(...)
- * @function   :Check that each date/time field is within its basic range
- * @parameters :datetime: Date/time structure to check
- * @retvalue   :1 when valid, otherwise 0
- ******************************************************************************/
+/*
+  * @brief  Check that each date/time field is within its basic range
+  * @param  datetime: Date/time structure to check
+  * @retval 1 when valid, otherwise 0
+  */
 static uint8_t valid_datetime(const hal_ds1302_datetime_t *datetime)
 {
     return (datetime != 0 && datetime->seconds < 60U && datetime->minutes < 60U &&
@@ -173,12 +161,10 @@ static uint8_t valid_datetime(const hal_ds1302_datetime_t *datetime)
             datetime->weekday >= 1U && datetime->weekday <= 7U && datetime->year <= 99U);
 }
 
-/*****************************************************************************
- * @name       :void hal_ds1302_init(void)
- * @function   :Initialize DS1302 control and bidirectional data pins
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Initialize DS1302 control and bidirectional data pins
+  * @retval None
+  */
 void hal_ds1302_init(void)
 {
     hal_gpio_init(HAL_DS1302_CE_PORT, HAL_DS1302_CE_PIN, HAL_GPIO_OUT_PP);
@@ -189,12 +175,11 @@ void hal_ds1302_init(void)
     hal_gpio_clear(HAL_DS1302_SCLK_PORT, HAL_DS1302_SCLK_PIN);
 }
 
-/*****************************************************************************
- * @name       :hal_ds1302_status_t hal_ds1302_read_time(...)
- * @function   :Read, validate, and convert DS1302 date/time registers
- * @parameters :datetime: Pointer to the output date/time structure
- * @retvalue   :RTC status code
- ******************************************************************************/
+/*
+  * @brief  Read, validate, and convert DS1302 date/time registers
+  * @param  datetime: Pointer to the output date/time structure
+  * @retval RTC status code
+  */
 hal_ds1302_status_t hal_ds1302_read_time(hal_ds1302_datetime_t *datetime)
 {
     uint8_t raw[8];
@@ -260,12 +245,11 @@ hal_ds1302_status_t hal_ds1302_read_time(hal_ds1302_datetime_t *datetime)
     return stopped ? HAL_DS1302_CLOCK_STOPPED : HAL_DS1302_OK;
 }
 
-/*****************************************************************************
- * @name       :hal_ds1302_status_t hal_ds1302_write_time(...)
- * @function   :Validate and write date/time registers in 24-hour format
- * @parameters :datetime: Pointer to the input date/time structure
- * @retvalue   :RTC status code
- ******************************************************************************/
+/*
+  * @brief  Validate and write date/time registers in 24-hour format
+  * @param  datetime: Pointer to the input date/time structure
+  * @retval RTC status code
+  */
 hal_ds1302_status_t hal_ds1302_write_time(const hal_ds1302_datetime_t *datetime)
 {
     uint8_t values[8];
@@ -305,12 +289,11 @@ hal_ds1302_status_t hal_ds1302_write_time(const hal_ds1302_datetime_t *datetime)
     return HAL_DS1302_OK;
 }
 
-/*****************************************************************************
- * @name       :hal_ds1302_status_t hal_ds1302_read_ram(...)
- * @function   :Read one byte from DS1302 31-byte battery-backed RAM
- * @parameters :addr: RAM byte index (0..30); value: Output byte pointer
- * @retvalue   :RTC status code
- ******************************************************************************/
+/*
+  * @brief  Read one byte from DS1302 31-byte battery-backed RAM
+  * @param  addr: RAM byte index (0..30); value: Output byte pointer
+  * @retval RTC status code
+  */
 hal_ds1302_status_t hal_ds1302_read_ram(uint8_t addr, uint8_t *value)
 {
     if (value == 0 || addr >= DS1302_RAM_SIZE) {
@@ -327,12 +310,11 @@ hal_ds1302_status_t hal_ds1302_read_ram(uint8_t addr, uint8_t *value)
     return HAL_DS1302_OK;
 }
 
-/*****************************************************************************
- * @name       :hal_ds1302_status_t hal_ds1302_write_ram(...)
- * @function   :Write one byte to DS1302 31-byte battery-backed RAM
- * @parameters :addr: RAM byte index (0..30); value: Byte to write
- * @retvalue   :RTC status code
- ******************************************************************************/
+/*
+  * @brief  Write one byte to DS1302 31-byte battery-backed RAM
+  * @param  addr: RAM byte index (0..30); value: Byte to write
+  * @retval RTC status code
+  */
 hal_ds1302_status_t hal_ds1302_write_ram(uint8_t addr, uint8_t value)
 {
     if (addr >= DS1302_RAM_SIZE) {

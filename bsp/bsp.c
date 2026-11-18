@@ -1,8 +1,16 @@
+/**
+  ******************************************************************************
+  * @file    bsp.c
+  * @author  Digital Clock Team (HTNN-N15)
+  * @brief   Board Support Package implementation for Blue Pill GPIO, LED, buzzer, and button.
+  ******************************************************************************
+  */
+
 #include "bsp.h"
 #include "bsp_pins.h"
 #include "hal_gpio.h"
 
-/**
+/*
  ******************************************************************************
  * @brief  Khoi tao toan bo phan cung (GPIO) cho project Digital Clock
  *
@@ -51,7 +59,7 @@ void bsp_init(void)
     hal_gpio_set(LED_PORT, LED_PIN);                         /* LED tat ban dau (HIGH = tat) */
 }
 
-/**
+/*
  * @brief  Dieu khien buzzer
  * @param  on: 1 = keu (set HIGH), 0 = tat (set LOW)
  *
@@ -66,7 +74,7 @@ void bsp_buzzer_set(uint8_t on)
         hal_gpio_clear(BUZ_PORT, BUZ_PIN);  /* PA8 = LOW  => buzzer tat */
 }
 
-/**
+/*
  * @brief  Dieu khien LED tren board BluePill
  * @param  on: 1 = sang (set LOW), 0 = tat (set HIGH)
  *
@@ -82,7 +90,7 @@ void bsp_led_set(uint8_t on)
         hal_gpio_set(LED_PORT, LED_PIN);    /* PC13 = HIGH => LED tat  */
 }
 
-/**
+/*
  * @brief  Doc trang thai nut bam
  * @retval 1 neu dang nhan, 0 neu tha
  *

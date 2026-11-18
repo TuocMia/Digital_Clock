@@ -13,7 +13,8 @@ CFLAGS += -I$(RTOS) -I$(RTOS)/include -I$(RTOS)/portable/GCC/ARM_CM3
 CFLAGS += -I$(STD_LIB)/CMSIS/CM3/CoreSupport -I$(STD_DEV) -I$(STD_DRV)/inc
 
 # main.c + bsp + hal + app + FreeRTOS kernel + StdPeriph
-SRCS  = main.c
+MAIN_SRC ?= main.c
+SRCS  = $(MAIN_SRC)
 SRCS += $(wildcard bsp/*.c)
 SRCS += $(wildcard hal/src/*.c)
 SRCS += $(wildcard app/src/*.c)
