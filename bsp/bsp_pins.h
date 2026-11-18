@@ -1,3 +1,8 @@
+/**
+ * @file    bsp_pins.h
+ * @brief   GPIO pin mapping for STM32F103C8T6 Blue Pill peripherals.
+ */
+
 #ifndef BSP_PINS_H
 #define BSP_PINS_H
 

@@ -1,3 +1,8 @@
+/**
+ * @file    app_cfg.h
+ * @brief   FreeRTOS task priorities, stack sizes, periods, IPC sizes, and thresholds.
+ */
+
 #ifndef APP_CFG_H
 #define APP_CFG_H
 
@@ -75,7 +80,7 @@
 #define POT_AVG_SAMPLES         8       /* T_Pot lay trung binh 8 mau ADC */
 #define POT_ADC_MAX             4095U   /* ADC 12 bit */
 #define POT_REPORT_DELTA        12      /* T_Pot chi gui khi ADC lech >= 12 so voi lan gui truoc */
-#define POT_ARM_DELTA           40      /* T_Ctrl bo qua bien tro sau khi vao buoc moi cho den khi nup lech >= 40 */
+#define POT_ARM_DELTA           24      /* T_Ctrl bo qua bien tro sau khi vao buoc moi cho den khi nup lech >= 24 */
 #define POT_ONOFF_THRESHOLD     2048U   /* S5: < nguong = TAT, >= nguong = BAT */
 
 /* ------------------------------------------------------------------ */

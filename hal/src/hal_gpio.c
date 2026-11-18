@@ -1,11 +1,15 @@
+/*
+  * @file    hal_gpio.c
+  * @brief   GPIO Hardware Abstraction Layer implementation for STM32F10x.
+  */
+
 #include "hal_gpio.h"
 
-/*****************************************************************************
- * @name       :static void hal_gpio_enable_clock(GPIO_TypeDef *port)
- * @function   :Enable clock for the specified GPIO port
- * @parameters :port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Enable clock for the specified GPIO port
+  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
+  * @retval None
+  */
 static void hal_gpio_enable_clock(GPIO_TypeDef *port)
 {
     if (port == GPIOA) {
@@ -25,15 +29,13 @@ static void hal_gpio_enable_clock(GPIO_TypeDef *port)
     }
 }
 
-/*****************************************************************************
- * @name       :void hal_gpio_init(GPIO_TypeDef *port, uint16_t pin,
- *                                  hal_gpio_mode_t mode)
- * @function   :Configure GPIO pin mode and enable corresponding port clock
- * @parameters :port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
- *              pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
- *              mode: Pin mode (hal_gpio_mode_t)
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Configure GPIO pin mode and enable corresponding port clock
+  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
+  * @param  pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
+  * @param  mode: Pin mode (hal_gpio_mode_t)
+  * @retval None
+  */
 void hal_gpio_init(GPIO_TypeDef *port, uint16_t pin, hal_gpio_mode_t mode)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -76,39 +78,36 @@ void hal_gpio_init(GPIO_TypeDef *port, uint16_t pin, hal_gpio_mode_t mode)
     GPIO_Init(port, &GPIO_InitStructure);
 }
 
-/*****************************************************************************
- * @name       :void hal_gpio_set(GPIO_TypeDef *port, uint16_t pin)
- * @function   :Set GPIO pin to HIGH level
- * @parameters :port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
- *              pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Set GPIO pin to HIGH level
+  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
+  * @param  pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
+  * @retval None
+  */
 void hal_gpio_set(GPIO_TypeDef *port, uint16_t pin)
 {
     /* Set selected GPIO pin */
     GPIO_SetBits(port, pin);
 }
 
-/*****************************************************************************
- * @name       :void hal_gpio_clear(GPIO_TypeDef *port, uint16_t pin)
- * @function   :Clear GPIO pin to LOW level
- * @parameters :port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
- *              pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Clear GPIO pin to LOW level
+  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
+  * @param  pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
+  * @retval None
+  */
 void hal_gpio_clear(GPIO_TypeDef *port, uint16_t pin)
 {
     /* Reset selected GPIO pin */
     GPIO_ResetBits(port, pin);
 }
 
-/*****************************************************************************
- * @name       :uint8_t hal_gpio_read(GPIO_TypeDef *port, uint16_t pin)
- * @function   :Read logic level of a GPIO pin
- * @parameters :port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
- *              pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
- * @retvalue   :1 if HIGH, 0 if LOW
- ******************************************************************************/
+/*
+  * @brief  Read logic level of a GPIO pin
+  * @param  port: GPIO port (GPIOA, GPIOB, GPIOC, ...)
+  * @param  pin: GPIO pin mask (GPIO_Pin_0 .. GPIO_Pin_15)
+  * @retval 1 if HIGH, 0 if LOW
+  */
 uint8_t hal_gpio_read(GPIO_TypeDef *port, uint16_t pin)
 {
     /* Read input data bit and return normalized value */

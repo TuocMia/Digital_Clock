@@ -1,3 +1,8 @@
+/**
+ * @file    app_ipc.h
+ * @brief   Shared data structures, queues, mutex, and event group handles.
+ */
+
 #ifndef APP_IPC_H
 #define APP_IPC_H
 

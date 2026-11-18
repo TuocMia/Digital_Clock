@@ -1,3 +1,8 @@
+/*
+  * @file    hal_adc.c
+  * @brief   ADC1 Hardware Abstraction Layer implementation for PA3.
+  */
+
 #include "hal_adc.h"
 #include "hal_gpio.h"
 #include "stm32f10x_conf.h"
@@ -25,12 +30,10 @@ static uint8_t wait_for_calibration(FunctionalState reset)
     return (ADC_GetCalibrationStatus(ADC1) == RESET) ? 1U : 0U;
 }
 
-/*****************************************************************************
- * @name       :hal_adc_status_t hal_adc_init(void)
- * @function   :Initialize ADC1 to read the potentiometer on PA3
- * @parameters :None
- * @retvalue   :HAL_ADC_OK or HAL_ADC_TIMEOUT
- ******************************************************************************/
+/*
+  * @brief  Initialize ADC1 to read the potentiometer on PA3
+  * @retval HAL_ADC_OK or HAL_ADC_TIMEOUT
+  */
 hal_adc_status_t hal_adc_init(void)
 {
     ADC_InitTypeDef adc;
@@ -66,12 +69,11 @@ hal_adc_status_t hal_adc_init(void)
     return HAL_ADC_OK;
 }
 
-/*****************************************************************************
- * @name       :hal_adc_status_t hal_adc_read(uint16_t *value)
- * @function   :Perform one ADC conversion and return the 12-bit result
- * @parameters :value: Pointer to the result variable
- * @retvalue   :HAL_ADC_OK, HAL_ADC_INVALID_ARGUMENT, or HAL_ADC_TIMEOUT
- ******************************************************************************/
+/*
+  * @brief  Perform one ADC conversion and return the 12-bit result
+  * @param  value: Pointer to the result variable
+  * @retval HAL_ADC_OK, HAL_ADC_INVALID_ARGUMENT, or HAL_ADC_TIMEOUT
+  */
 hal_adc_status_t hal_adc_read(uint16_t *value)
 {
     uint32_t timeout = HAL_ADC_POLL_TIMEOUT;

@@ -1,3 +1,11 @@
+/**
+  ******************************************************************************
+  * @file    app_ipc.c
+  * @author  Digital Clock Team (HTNN-N15)
+  * @brief   FreeRTOS IPC object initialization and M_DATA mutex helpers.
+  ******************************************************************************
+  */
+
 #include <string.h>
 #include "app_ipc.h"
 #include "app_cfg.h"

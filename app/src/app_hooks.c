@@ -1,3 +1,11 @@
+/**
+  ******************************************************************************
+  * @file    app_hooks.c
+  * @author  Digital Clock Team (HTNN-N15)
+  * @brief   FreeRTOS stack overflow and malloc failure hooks.
+  ******************************************************************************
+  */
+
 #include "FreeRTOS.h"
 #include "task.h"
 

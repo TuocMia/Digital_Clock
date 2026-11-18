@@ -1,3 +1,8 @@
+/*
+  * @file    st7789.c
+  * @brief   ST7789 240x240 SPI TFT LCD driver implementation.
+  */
+
 #include "st7789.h"
 
 /* LCD device parameters */
@@ -7,12 +12,11 @@ _lcd_dev lcddev;
 u16 POINT_COLOR = BLACK;
 u16 BACK_COLOR  = WHITE;
 
-/*****************************************************************************
- * @name       :void LCD_Delay(volatile u32 count)
- * @function   :Simple delay function for LCD initialization
- * @parameters :count: Delay loop count
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Simple delay function for LCD initialization
+  * @param  count: Delay loop count
+  * @retval None
+  */
 static void LCD_Delay(volatile u32 count)
 {
     while (count--)
@@ -21,12 +25,10 @@ static void LCD_Delay(volatile u32 count)
     }
 }
 
-/*****************************************************************************
- * @name       :void LCD_GPIOInit(void)
- * @function   :Initialize LCD control GPIO pins using HAL GPIO
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Initialize LCD control GPIO pins using HAL GPIO
+  * @retval None
+  */
 static void LCD_GPIOInit(void)
 {
     /* Configure LCD control pins as push-pull outputs */
@@ -43,12 +45,10 @@ static void LCD_GPIOInit(void)
                  LCD_RST_PIN);
 }
 
-/*****************************************************************************
- * @name       :void LCD_Reset(void)
- * @function   :Reset ST7789 LCD
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Reset ST7789 LCD
+  * @retval None
+  */
 static void LCD_Reset(void)
 {
     /* Reset LCD */
@@ -60,12 +60,11 @@ static void LCD_Reset(void)
     LCD_Delay(100000);
 }
 
-/*****************************************************************************
- * @name       :void LCD_WR_REG(u8 data)
- * @function   :Write one command to LCD
- * @parameters :data: Command byte
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Write one command to LCD
+  * @param  data: Command byte
+  * @retval None
+  */
 void LCD_WR_REG(u8 data)
 {
     /* Select command mode */
@@ -75,12 +74,11 @@ void LCD_WR_REG(u8 data)
     SPI_WriteByte(SPI2, data);
 }
 
-/*****************************************************************************
- * @name       :void LCD_WR_DATA(u8 data)
- * @function   :Write one data byte to LCD
- * @parameters :data: Data byte
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Write one data byte to LCD
+  * @param  data: Data byte
+  * @retval None
+  */
 void LCD_WR_DATA(u8 data)
 {
     /* Select data mode */
@@ -90,12 +88,11 @@ void LCD_WR_DATA(u8 data)
     SPI_WriteByte(SPI2, data);
 }
 
-/*****************************************************************************
- * @name       :void Lcd_WriteData_16Bit(u16 Data)
- * @function   :Write 16-bit data to LCD
- * @parameters :Data: 16-bit data
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Write 16-bit data to LCD
+  * @param  Data: 16-bit data
+  * @retval None
+  */
 void Lcd_WriteData_16Bit(u16 Data)
 {
     /* Select data mode */
@@ -108,27 +105,23 @@ void Lcd_WriteData_16Bit(u16 Data)
     SPI_WriteByte(SPI2, Data);
 }
 
-/*****************************************************************************
- * @name       :void LCD_WriteRAM_Prepare(void)
- * @function   :Prepare LCD for RAM write operation
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Prepare LCD for RAM write operation
+  * @retval None
+  */
 void LCD_WriteRAM_Prepare(void)
 {
     LCD_WR_REG(0x2C);
 }
 
-/*****************************************************************************
- * @name       :void LCD_SetWindows(u16 xStar, u16 yStar,
- *                                  u16 xEnd, u16 yEnd)
- * @function   :Set LCD drawing window
- * @parameters :xStar: Start X coordinate
- *              yStar: Start Y coordinate
- *              xEnd : End X coordinate
- *              yEnd : End Y coordinate
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Set LCD drawing window
+  * @param  xStar: Start X coordinate
+  * @param  yStar: Start Y coordinate
+  * @param  xEnd: End X coordinate
+  * @param  yEnd: End Y coordinate
+  * @retval None
+  */
 void LCD_SetWindows(u16 xStar, u16 yStar,
                     u16 xEnd, u16 yEnd)
 {
@@ -150,37 +143,34 @@ void LCD_SetWindows(u16 xStar, u16 yStar,
     LCD_WriteRAM_Prepare();
 }
 
-/*****************************************************************************
- * @name       :void LCD_SetCursor(u16 Xpos, u16 Ypos)
- * @function   :Set LCD drawing cursor position
- * @parameters :Xpos: X coordinate
- *              Ypos: Y coordinate
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Set LCD drawing cursor position
+  * @param  Xpos: X coordinate
+  * @param  Ypos: Y coordinate
+  * @retval None
+  */
 void LCD_SetCursor(u16 Xpos, u16 Ypos)
 {
     LCD_SetWindows(Xpos, Ypos, Xpos, Ypos);
 }
 
-/*****************************************************************************
- * @name       :void LCD_DrawPoint(u16 x, u16 y)
- * @function   :Draw one pixel using POINT_COLOR
- * @parameters :x: X coordinate
- *              y: Y coordinate
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Draw one pixel using POINT_COLOR
+  * @param  x: X coordinate
+  * @param  y: Y coordinate
+  * @retval None
+  */
 void LCD_DrawPoint(u16 x, u16 y)
 {
     LCD_SetCursor(x, y);
     Lcd_WriteData_16Bit(POINT_COLOR);
 }
 
-/*****************************************************************************
- * @name       :void LCD_Clear(u16 Color)
- * @function   :Fill the LCD screen with a specified color
- * @parameters :Color: Fill color
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Fill the LCD screen with a specified color
+  * @param  Color: Fill color
+  * @retval None
+  */
 void LCD_Clear(u16 Color)
 {
     u32 i;
@@ -205,34 +195,29 @@ void LCD_Clear(u16 Color)
     }
 }
 
-/*****************************************************************************
- * @name       :void LCD_DisplayOn(void)
- * @function   :Turn on LCD display
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Turn on LCD display
+  * @retval None
+  */
 void LCD_DisplayOn(void)
 {
     LCD_WR_REG(0x29);
 }
 
-/*****************************************************************************
- * @name       :void LCD_DisplayOff(void)
- * @function   :Turn off LCD display
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Turn off LCD display
+  * @retval None
+  */
 void LCD_DisplayOff(void)
 {
     LCD_WR_REG(0x28);
 }
 
-/*****************************************************************************
- * @name       :void LCD_direction(u8 direction)
- * @function   :Set LCD display direction
- * @parameters :direction: Display direction
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Set LCD display direction
+  * @param  direction: Display direction
+  * @retval None
+  */
 void LCD_direction(u8 direction)
 {
     lcddev.dir = direction;
@@ -255,12 +240,10 @@ void LCD_direction(u8 direction)
     }
 }
 
-/*****************************************************************************
- * @name       :void LCD_Init(void)
- * @function   :Initialize ST7789 LCD
- * @parameters :None
- * @retvalue   :None
- ******************************************************************************/
+/*
+  * @brief  Initialize ST7789 LCD
+  * @retval None
+  */
 void LCD_Init(void)
 {
     /* Initialize LCD control GPIO */
