@@ -24,9 +24,9 @@ typedef struct {
 } AlarmStep_t;
 
 /* Mỗi period tương ứng TASK_ALARM_PERIOD_MS, hiện tại là 250 ms. */
-#define BEEP_STEP  { 1U, 4U }  /* Kêu 200 ms */
-#define GAP_STEP   { 0U, 1U }  /* Ngắt 50 ms giữa tiếng */
-#define REST_STEP  { 0U, 10U } /* Nghỉ 500 ms giữa nhóm */
+#define BEEP_STEP  { 1U, 4U }  /**< Beep 4 x 250 ms = 1000 ms */
+#define GAP_STEP   { 0U, 1U }  /**< Silent gap 1 x 250 ms = 250 ms between beeps */
+#define REST_STEP  { 0U, 10U } /**< Rest 10 x 250 ms = 2500 ms between beep groups */
 
 static const AlarmStep_t alarm_pattern[] = {
     BEEP_STEP, GAP_STEP, BEEP_STEP, GAP_STEP, BEEP_STEP, REST_STEP,

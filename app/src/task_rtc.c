@@ -167,6 +167,23 @@ static hal_ds1302_status_t rtc_store_alarm(const RtcCmd *command)
 }
 
 /**
+ * @brief  Return the number of days in a month, accounting for leap years (2000..2099).
+ * @param  month Month 1..12.
+ * @param  year  Year offset 0..99 (2000..2099).
+ * @return Days in the month (28..31).
+ */
+static uint8_t rtc_days_in_month(uint8_t month, uint8_t year)
+{
+    static const uint8_t days[12] = { 31U, 28U, 31U, 30U, 31U, 30U, 31U, 31U, 30U, 31U, 30U, 31U };
+
+    /* Within 2000..2099, every year divisible by 4 is a leap year (2000 included). */
+    if (month == 2U && (year % 4U) == 0U) {
+        return 29U;
+    }
+    return days[month - 1U];
+}
+
+/**
  * @brief  Execute one RtcCmd (CMD_SET_TIME, CMD_SET_DATE, or CMD_SET_ALARM) against DS1302.
  * @param  command Pointer to dequeued command.
  */
@@ -230,6 +247,14 @@ static void rtc_handle_command(const RtcCmd *command)
         datetime.date  = command->date;
         datetime.month = command->month;
         datetime.year  = command->year;
+
+        /* Clamp invalid day-of-month (e.g. 31/02 -> 28/02 or 29/02). */
+        {
+            uint8_t max_day = rtc_days_in_month(command->month, command->year);
+            if (datetime.date > max_day) {
+                datetime.date = max_day;
+            }
+        }
 
         status = hal_ds1302_write_time(&datetime);
         if (status != HAL_DS1302_OK) {

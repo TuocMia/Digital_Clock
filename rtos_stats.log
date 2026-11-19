@@ -1,0 +1,122 @@
+openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "init; arm semihosting enable; reset run"
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 162 / 256 W (used 94 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)
+
+=== FreeRTOS Runtime Stats (main) ===
+Free Heap     : 3624 bytes
+Min Ever Heap : 3624 bytes
+Task Stack High Water Mark:
+  BUTTON: free 100 / 128 W (used 28 W)
+  POT: free 90 / 128 W (used 38 W)
+  CTRL: free 148 / 192 W (used 44 W)
+  RTC: free 106 / 160 W (used 54 W)
+  ALARM: free 86 / 128 W (used 42 W)
+  DISPLAY: free 160 / 256 W (used 96 W)

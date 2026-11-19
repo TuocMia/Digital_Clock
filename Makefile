@@ -12,6 +12,10 @@ CFLAGS += -I. -Ibsp -Ihal/inc -Iapp/inc
 CFLAGS += -I$(RTOS) -I$(RTOS)/include -I$(RTOS)/portable/GCC/ARM_CM3
 CFLAGS += -I$(STD_LIB)/CMSIS/CM3/CoreSupport -I$(STD_DEV) -I$(STD_DRV)/inc
 
+ifeq ($(ENABLE_RTOS_STATS),1)
+CFLAGS += -DENABLE_RTOS_STATS
+endif
+
 # main.c + bsp + hal + app + FreeRTOS kernel + StdPeriph
 MAIN_SRC ?= main.c
 SRCS  = $(MAIN_SRC)
@@ -43,4 +47,7 @@ clean:
 flash: firmware.bin
 	openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program firmware.bin verify reset exit 0x08000000"
 
-.PHONY: all clean flash
+stats-log:
+	openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "init; arm semihosting enable; reset run"
+
+.PHONY: all clean flash stats-log

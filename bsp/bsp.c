@@ -86,7 +86,6 @@ void bsp_led_set(uint8_t on)
  * @brief  Doc trang thai nut bam (PA0, pull-up noi, nhan = 0).
  * @retval 1 neu dang nhan, 0 neu tha.
  */
- */
 uint8_t bsp_button_pressed(void)
 {
     return !hal_gpio_read(BTN_PORT, BTN_PIN);  /* Nhan = LOW => !0 = 1 */
